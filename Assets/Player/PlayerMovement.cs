@@ -24,11 +24,15 @@ public class PlayerMovement : MonoBehaviour
     public bool canJump = true;
     private float directionX;
 
+    void Start()
+    {
+        InputManager.onMove += OnMove;
+        InputManager.onJump += OnJump;
+    }
+
     void Update()
     {
-        _input();
         _movePlayer();
-
         _handleAnimation();
     }
 
@@ -81,12 +85,14 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
 
-    private void _input()
+    void OnMove(float direction)
     {
-        directionX = Input.GetAxisRaw("Horizontal");
+        directionX = direction;
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-            _jump();
+    void OnJump()
+    {
+        _jump();
     }
 
     private void _checkIfGrounded()
