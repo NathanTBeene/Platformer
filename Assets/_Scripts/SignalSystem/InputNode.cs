@@ -10,9 +10,19 @@ using UnityEngine;
 
 public class InputNode : SignalNode
 {
-  public static Action<GameObject> onInputOn;
-  public static Action<GameObject> onInputOff;
+  public static Action<InputNode> onInputOn;
+  public static Action<InputNode> onInputOff;
 
-  protected override void _emitOn() => onInputOn?.Invoke(gameObject);
-  protected override void _emitOff() => onInputOff?.Invoke(gameObject);
+  protected override void _emitOn()
+  {
+    var gameObject = this.gameObject;
+    Debug.Log(gameObject.name + " emitted ON signal");
+    onInputOn?.Invoke(this);
+  }
+  protected override void _emitOff()
+  {
+    var gameObject = this.gameObject;
+    Debug.Log(gameObject.name + " emitted OFF signal");
+    onInputOff?.Invoke(this);
+  }
 }

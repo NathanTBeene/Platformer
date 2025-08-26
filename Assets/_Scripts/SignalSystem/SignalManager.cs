@@ -25,32 +25,35 @@ public class SignalManager : MonoBehaviour
     OutputNode.onOutputOff -= HandleOutputOff;
   }
 
-  private void HandleInputOn(GameObject inputObj)
+  private void HandleInputOn(InputNode inputNode)
   {
+    Debug.Log("SignalManager: Input On from " + inputNode.gameObject.name);
     // Handle input on signal
-    PropagateSignal(inputObj, true);
+    PropagateSignal(inputNode, true);
   }
 
-  private void HandleInputOff(GameObject inputObj)
+  private void HandleInputOff(InputNode inputNode)
   {
+    Debug.Log("SignalManager: Input Off from " + inputNode.gameObject.name);
     // Handle input off signal
-    PropagateSignal(inputObj, false);
+    PropagateSignal(inputNode, false);
   }
 
-  private void HandleOutputOn(GameObject outputObj)
+  private void HandleOutputOn(OutputNode outputNode)
   {
     // Handle output on signal
   }
 
-  private void HandleOutputOff(GameObject outputObj)
+  private void HandleOutputOff(OutputNode outputNode)
   {
     // Handle output off signal
   }
 
-  private void PropagateSignal(GameObject sourceObj, bool signalState)
+  private void PropagateSignal(InputNode sourceNode, bool signalState)
   {
     // Get all connections where the object is the source.
-    var outgoingConnections = connections.Where(c => c.source == sourceObj);
+    var outgoingConnections = connections.Where(c => c.source == sourceNode);
+    Debug.Log($"Propagating signal from {sourceNode.gameObject.name} to {outgoingConnections.Count()} connections.");
 
     foreach (var connection in outgoingConnections)
     {
@@ -83,11 +86,11 @@ public class SignalManager : MonoBehaviour
     bool gateOutput = gate.EvaluateInputs(incomingConnections.ToArray());
 
     // If gate output has changed, propogate further.
-    if (gate.currentOutput != gateOutput)
+    if (gate.isActive != gateOutput)
     {
-      gate.currentOutput = gateOutput;
+      gate.isActive = gateOutput;
 
-      PropagateSignal(gate.gameObject, gateOutput);
+      PropagateSignal(gate, gateOutput);
     }
   }
 }

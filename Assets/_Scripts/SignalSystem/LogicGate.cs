@@ -1,9 +1,8 @@
 using System.Linq;
 using UnityEngine;
 
-public abstract class LogicGate : MonoBehaviour
+public abstract class LogicGate : InputNode
 {
-  public bool currentOutput = false;
   public abstract bool EvaluateInputs(Connection[] inputConnections);
 }
 

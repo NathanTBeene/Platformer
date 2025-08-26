@@ -23,26 +23,25 @@ public class PressurePlate : MonoBehaviour
         }
     }
 
-    // private void OnCollisionEnter(Collision other)
-    // {
-    //     Debug.Log("Collision Detected from: " + other.gameObject.name);
-    //     if (other.gameObject.CompareTag("Player"))
-    //     {
-    //         Debug.Log("Player stepped on pressure plate");
-    //         _plateDown();
-    //         inputNode.setState(true);
-    //     }
-    // }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player stepped on pressure plate");
+            _plateDown();
+            inputNode.setState(true);
+        }
+    }
 
-    // private void OnTriggerExit(Collider other)
-    // {
-    //     if (other.CompareTag("Player"))
-    //     {
-    //         Debug.Log("Player left pressure plate");
-    //         inputNode.setState(false);
-    //         _plateUp();
-    //     }
-    // }
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player left pressure plate");
+            inputNode.setState(false);
+            _plateUp();
+        }
+    }
 
     private void _plateDown()
     {
