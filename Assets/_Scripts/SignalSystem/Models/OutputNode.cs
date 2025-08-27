@@ -22,7 +22,6 @@ public class OutputNode : SignalNode
   protected override void _emitOff()
   {
     var gameObject = this.gameObject;
-    Debug.Log(gameObject.name + " recieved OFF signal");
     onOutputOff?.Invoke(this);
   }
 }
