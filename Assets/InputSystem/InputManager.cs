@@ -5,6 +5,7 @@ public class InputManager : MonoBehaviour
 {
     public static event Action<float> onMove;
     public static event Action onJump;
+    public static event Action onInteract;
 
 
     void Update()
@@ -16,6 +17,11 @@ public class InputManager : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             onJump?.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            onInteract?.Invoke();
         }
     }
 }

@@ -80,7 +80,8 @@ public class SignalManager : MonoBehaviour
   private void EvaluateLogicGate(LogicGate gate)
   {
     // Get all connections feeding INTO this gate.
-    var incomingConnections = connections.Where(c => c.destination == gate.gameObject);
+    var incomingConnections = connections.Where(c => c.destination == gate);
+    Debug.Log($"Evaluating {gate.gameObject.name} with {incomingConnections.Count()} incoming connections.");
 
     // Apply gate logic
     bool gateOutput = gate.EvaluateInputs(incomingConnections.ToArray());
