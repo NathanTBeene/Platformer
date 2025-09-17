@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,14 +7,16 @@ public class Switch : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputNode inputNode;
-    [SerializeField] private GameObject sprite;
+    [SerializeField] private Animator anim;
+    [SerializeField] private SpriteRenderer indicatorSprite;
+    [SerializeField] private Sprite indicatorON;
+    [SerializeField] private Sprite indicatorOFF;
 
-    [Header("Offsets")]
-    [SerializeField] private float moveTime = 0.5f;
-    [SerializeField] private Vector3 onPosition;
-    [SerializeField] private Vector3 offPosition;
+    [Header("Settings")]
+    [SerializeField] private float switchCooldown = 0.2f;
 
     private bool canInteract = false;
+    private bool isCoolingDown = false;
 
     void Start()
     {
@@ -21,13 +24,9 @@ public class Switch : MonoBehaviour
         {
             inputNode = GetComponent<InputNode>();
         }
-        if (!sprite)
-        {
-            sprite = transform.GetChild(0).gameObject;
-        }
 
         _hook_signals();
-        _sprite_off();
+        _switch_off();
     }
 
     private void _hook_signals()
@@ -55,11 +54,11 @@ public class Switch : MonoBehaviour
 
     private void _on_interact()
     {
-        if (!inputNode.isActive && canInteract)
+        if (!inputNode.isActive && canInteract && !isCoolingDown)
         {
             inputNode.setState(true);
         }
-        else if (inputNode.isActive && canInteract)
+        else if (inputNode.isActive && canInteract && !isCoolingDown)
         {
             inputNode.setState(false);
         }
@@ -68,23 +67,38 @@ public class Switch : MonoBehaviour
     private void _on_input_on(InputNode node)
     {
         if (node == inputNode)
-            _sprite_on();
+            _switch_on();
     }
 
     private void _on_input_off(InputNode node)
     {
         if (node == inputNode)
-            _sprite_off();
+            _switch_off();
     }
 
-    private void _sprite_on()
+    private void _switch_on()
     {
-        sprite.transform.DOLocalMove(onPosition, moveTime);
+        anim.SetBool("isOn", true);
+        indicatorSprite.sprite = indicatorON;
+        _start_cooldown();
     }
 
-    private void _sprite_off()
+    private void _switch_off()
     {
-        sprite.transform.DOLocalMove(offPosition, moveTime);
+        anim.SetBool("isOn", false);
+        indicatorSprite.sprite = indicatorOFF;
+        _start_cooldown();
+    }
+
+    private void _start_cooldown()
+    {
+        canInteract = false;
+        isCoolingDown = true;
+        Task.Delay((int)(switchCooldown * 1000)).ContinueWith(t =>
+        {
+            canInteract = true;
+            isCoolingDown = false;
+        });
     }
 
 }

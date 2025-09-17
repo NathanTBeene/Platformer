@@ -4,22 +4,16 @@ using UnityEngine;
 public class PressurePlate : MonoBehaviour
 {
     [SerializeField] private InputNode inputNode;
-    [SerializeField] private GameObject plateVisual;
-    [SerializeField] private Vector3 pressedOffset = new Vector3(0, -0.1f, 0);
+    [SerializeField] private SpriteRenderer plateSprite;
+    [SerializeField] private Sprite plateUpSprite;
+    [SerializeField] private Sprite plateDownSprite;
 
-    private Vector3 initialPosition;
 
     void Start()
     {
-        initialPosition = plateVisual.transform.localPosition;
         if (!inputNode)
         {
             inputNode = GetComponent<InputNode>();
-        }
-
-        if (!plateVisual)
-        {
-            plateVisual = transform.GetChild(0).gameObject;
         }
     }
 
@@ -27,7 +21,6 @@ public class PressurePlate : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player stepped on pressure plate");
             _plateDown();
             inputNode.setState(true);
         }
@@ -37,7 +30,6 @@ public class PressurePlate : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player left pressure plate");
             inputNode.setState(false);
             _plateUp();
         }
@@ -45,11 +37,11 @@ public class PressurePlate : MonoBehaviour
 
     private void _plateDown()
     {
-        plateVisual.transform.DOLocalMove(initialPosition + pressedOffset, 0.2f);
+        plateSprite.sprite = plateDownSprite;
     }
 
     private void _plateUp()
     {
-        plateVisual.transform.DOLocalMove(initialPosition, 0.2f);
+        plateSprite.sprite = plateUpSprite;
     }
 }
