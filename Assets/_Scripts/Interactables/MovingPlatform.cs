@@ -35,8 +35,6 @@ public class MovingPlatform : MonoBehaviour
             outputNode = GetComponent<OutputNode>();
         }
 
-        OutputNode.onOutputOn += _onOutputOn;
-
         if (autoStart)
         {
             StartCoroutine(MovePlatform());

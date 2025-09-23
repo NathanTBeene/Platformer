@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class Switch : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private WireManager wire;
     [SerializeField] private InputNode inputNode;
     [SerializeField] private Animator anim;
     [SerializeField] private SpriteRenderer indicatorSprite;
@@ -14,6 +15,7 @@ public class Switch : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float switchCooldown = 0.2f;
+    [SerializeField] private float wireFillDuration = 0.5f;
 
     private bool canInteract = false;
     private bool isCoolingDown = false;
@@ -24,16 +26,17 @@ public class Switch : MonoBehaviour
         {
             inputNode = GetComponent<InputNode>();
         }
-
-        _hook_signals();
-        _switch_off();
+        // _switch_off();
     }
 
-    private void _hook_signals()
+    void OnEnable()
     {
         InputManager.onInteract += _on_interact;
-        InputNode.onInputOn += _on_input_on;
-        InputNode.onInputOff += _on_input_off;
+    }
+
+    void OnDisable()
+    {
+        InputManager.onInteract -= _on_interact;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -52,42 +55,34 @@ public class Switch : MonoBehaviour
         }
     }
 
-    private void _on_interact()
+    private async void _on_interact()
     {
         if (!inputNode.isActive && canInteract && !isCoolingDown)
         {
+            await _switch_on();
             inputNode.setState(true);
         }
         else if (inputNode.isActive && canInteract && !isCoolingDown)
         {
+            await _switch_off();
             inputNode.setState(false);
         }
     }
 
-    private void _on_input_on(InputNode node)
-    {
-        if (node == inputNode)
-            _switch_on();
-    }
-
-    private void _on_input_off(InputNode node)
-    {
-        if (node == inputNode)
-            _switch_off();
-    }
-
-    private void _switch_on()
+    private async Task _switch_on()
     {
         anim.SetBool("isOn", true);
         indicatorSprite.sprite = indicatorON;
         _start_cooldown();
+        await _fill_wire(true);
     }
 
-    private void _switch_off()
+    private async Task _switch_off()
     {
         anim.SetBool("isOn", false);
         indicatorSprite.sprite = indicatorOFF;
         _start_cooldown();
+        await _fill_wire(false);
     }
 
     private void _start_cooldown()
@@ -101,4 +96,15 @@ public class Switch : MonoBehaviour
         });
     }
 
+    private async Task _fill_wire(bool toOn)
+    {
+        if (wire != null)
+        {
+            if (toOn)
+                await wire.PowerOn(wireFillDuration);
+            else
+                // Power off should be really fast.
+                await wire.PowerOff(wireFillDuration * 0.5f);
+        }
+    }
 }

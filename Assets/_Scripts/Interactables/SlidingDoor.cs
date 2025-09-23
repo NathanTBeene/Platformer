@@ -19,6 +19,24 @@ public class SlidingDoor : MonoBehaviour
   private Vector3 _initialPosition;
   private Vector3 _targetPosition;
 
+  void OnEnable()
+  {
+    if (!outputNode)
+    {
+      Debug.LogWarning("No output node assigned, defaulting to OutputNode component on this object.");
+      outputNode = GetComponent<OutputNode>();
+    }
+
+    outputNode.onStateChange += onStateChange;
+  }
+
+  void OnDisable()
+  {
+    if (outputNode != null)
+    {
+      outputNode.onStateChange -= onStateChange;
+    }
+  }
 
   void Start()
   {
@@ -28,33 +46,16 @@ public class SlidingDoor : MonoBehaviour
       doorSprite = transform.GetChild(0).gameObject;
     }
 
-    if (!outputNode)
-    {
-      Debug.LogWarning("No output node assigned, defaulting to OutputNode component on this object.");
-      outputNode = GetComponent<OutputNode>();
-    }
-
-    OutputNode.onOutputOn += _onOutputOn;
-    OutputNode.onOutputOff += _onOutputOff;
-
     _initialPosition = doorSprite.transform.localPosition;
     _targetPosition = _initialPosition + _getTargetOffset();
   }
 
-  private void _onOutputOn(OutputNode sourceNode)
+  void onStateChange(bool state)
   {
-    if (sourceNode.gameObject == gameObject)
-    {
+    if (state)
       OpenDoor();
-    }
-  }
-
-  private void _onOutputOff(OutputNode sourceNode)
-  {
-    if (sourceNode.gameObject == gameObject)
-    {
+    else
       CloseDoor();
-    }
   }
 
   void OpenDoor()

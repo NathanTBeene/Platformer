@@ -11,19 +11,26 @@ public class WireManager : MonoBehaviour
 
   [SerializeField] private float width = 0.1f;
 
-  [Range(0, 1)]
+  [Range(0, 2)]
   [SerializeField] private float currentFill = 0.5f;
+
+  [Header("Wire Colors")]
+  [SerializeField] private Color powerColor = Color.red;
+  [SerializeField] private Color emptyColor = Color.black;
+  
+  [Header("Power State")]
+  [SerializeField] private bool isPowered = false;
 
   [Header("Debug")]
   public float debugFill = 0.5f;
   public float debugDuration = 2f;
-  private Coroutine fillCoroutine;
 
   private void Start()
   {
     _getPoints();
     lineRenderer.positionCount = points.Length;
     lineRenderer.SetPositions(points);
+    
   }
 
   private void _getPoints()
@@ -37,42 +44,51 @@ public class WireManager : MonoBehaviour
 
   private void Update()
   {
+    lineRenderer.material.SetFloat("_FillAmount", currentFill);
+    lineRenderer.material.SetColor("_EmptyColor", emptyColor);
+    lineRenderer.material.SetColor("_WireColor", powerColor);
     lineRenderer.startWidth = width;
     lineRenderer.endWidth = width;
-
-    lineRenderer.material.SetFloat("_FillAmount", currentFill);
   }
 
-  private void LateUpdate()
+  // Power turning on should go from fill 0 to fill 1
+  public async Task PowerOn(float duration = 1f)
   {
-    _getPoints();
-    lineRenderer.SetPositions(points);
+    StopAllCoroutines();
+    await StartCoroutineAsync(_fill(0f, 1f, duration, true));
   }
 
-  public IEnumerator OnFill(float duration, float targetFill)
+  // Power turning off should go from fill 1 to fill 2
+  public async Task PowerOff(float duration = 1f)
   {
-    float startTime = Time.time;
-    float initialFill = currentFill;
+    StopAllCoroutines();
+    await StartCoroutineAsync(_fill(1f, 2f, duration, false));
+  }
+
+  private Task StartCoroutineAsync(IEnumerator coroutine)
+  {
+    var tcs = new TaskCompletionSource<bool>();
+    StartCoroutine(WrapCoroutine(coroutine, tcs));
+    return tcs.Task;
+  }
+
+  private IEnumerator WrapCoroutine(IEnumerator coroutine, TaskCompletionSource<bool> tcs)
+  {
+    yield return StartCoroutine(coroutine);
+    tcs.SetResult(true);
+  }
+
+  private IEnumerator _fill(float startFill, float endFill, float duration, bool powerState = false)
+  {
     float elapsed = 0f;
-
     while (elapsed < duration)
     {
       elapsed += Time.deltaTime;
-      currentFill = Mathf.Lerp(initialFill, targetFill, elapsed / duration);
+      currentFill = Mathf.Lerp(startFill, endFill, elapsed / duration);
       yield return null;
     }
-    currentFill = targetFill;
-
-    Debug.Log($"Fill complete in {Time.time - startTime} seconds");
-  }
-
-  public void StartFill(float duration, float targetFill)
-  {
-    if (fillCoroutine != null)
-    {
-      StopCoroutine(fillCoroutine);
-    }
-    fillCoroutine = StartCoroutine(OnFill(duration, targetFill));
+    currentFill = endFill;
+    isPowered = powerState;
   }
 
   private void OnDrawGizmos()
@@ -105,14 +121,24 @@ public class WireManager : MonoBehaviour
 [CustomEditor(typeof(WireManager))]
 public class WireManagerEditor : Editor
 {
-  public override void OnInspectorGUI()
+  public override async void OnInspectorGUI()
   {
     DrawDefaultInspector();
 
     WireManager wireManager = (WireManager)target;
-    if (GUILayout.Button("Fill Wire"))
+    
+    GUILayout.Space(10);
+    GUILayout.Label("Power Controls", EditorStyles.boldLabel);
+    
+    GUILayout.BeginHorizontal();
+    if (GUILayout.Button("Turn Power ON"))
     {
-      wireManager.StartFill(wireManager.debugDuration, wireManager.debugFill);
+      await wireManager.PowerOn(wireManager.debugDuration);
     }
+    if (GUILayout.Button("Turn Power OFF"))
+    {
+      await wireManager.PowerOff(wireManager.debugDuration);
+    }
+    GUILayout.EndHorizontal();
   }
 }
