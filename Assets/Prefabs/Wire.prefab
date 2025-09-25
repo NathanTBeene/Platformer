@@ -155,7 +155,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WireManager
   points: []
   lineRenderer: {fileID: 5117016134463716425}
-  width: 0.5
+  width: 0.1
   currentFill: 0
+  powerColor: {r: 1, g: 0, b: 0, a: 1}
+  emptyColor: {r: 0, g: 0, b: 0, a: 1}
+  isPowered: 0
+  showGizmos: 1
   debugFill: 0
   debugDuration: 2

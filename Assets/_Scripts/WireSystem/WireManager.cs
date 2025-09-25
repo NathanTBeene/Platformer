@@ -12,7 +12,7 @@ public class WireManager : MonoBehaviour
   [SerializeField] private float width = 0.1f;
 
   [Range(0, 2)]
-  [SerializeField] private float currentFill = 0.5f;
+  [SerializeField] private float currentFill = 0.1f;
 
   [Header("Wire Colors")]
   [SerializeField] private Color powerColor = Color.red;
@@ -22,6 +22,7 @@ public class WireManager : MonoBehaviour
   [SerializeField] private bool isPowered = false;
 
   [Header("Debug")]
+  [SerializeField] private bool showGizmos = true;
   public float debugFill = 0.5f;
   public float debugDuration = 2f;
 
@@ -30,7 +31,7 @@ public class WireManager : MonoBehaviour
     _getPoints();
     lineRenderer.positionCount = points.Length;
     lineRenderer.SetPositions(points);
-    
+
   }
 
   private void _getPoints()
@@ -93,6 +94,8 @@ public class WireManager : MonoBehaviour
 
   private void OnDrawGizmos()
   {
+    if (!showGizmos) return;
+
     _getPoints();
     Gizmos.color = Color.red;
 

@@ -26,14 +26,23 @@ public class SignalCircuit
 
 
   private HashSet<Connection> activeConnections = new HashSet<Connection>();
+  private MonoBehaviour coroutineRunner;
+
+  public void Initialize(MonoBehaviour runner)
+  {
+    coroutineRunner = runner;
+  }
 
   public void Tick()
   {
     if (!isEnabled || connections == null || connections.Length == 0)
       return;
 
-    // Clear tick state
-    activeConnections.Clear();
+    if (coroutineRunner == null)
+    {
+      Debug.LogError("SignalCircuit: Coroutine runner not set. Call Initialize() with a MonoBehaviour.");
+      return;
+    }
 
     // First, get all connections that have an InputNode as source
     // These are the bottom level for signal propagation.
@@ -44,7 +53,8 @@ public class SignalCircuit
     foreach (var conn in inputConnections)
     {
       if (!ValidateConnection(conn)) continue;
-      PropagateSignalSync(conn);
+      if (activeConnections.Contains(conn)) continue; // Prevent re-entrance
+      coroutineRunner.StartCoroutine(PropagateSignalAsync(conn));
     }
   }
 
@@ -55,16 +65,22 @@ public class SignalCircuit
     return true;
   }
 
-  private void PropagateSignalSync(Connection inputConnection)
+  private IEnumerator PropagateSignalAsync(Connection inputConnection)
   {
-    if (inputConnection == null) return;
-    if (inputConnection.source == null || inputConnection.destination == null) return;
-    if (activeConnections.Contains(inputConnection)) return; // Prevent re-entrance
+    if (inputConnection == null) yield break;
+    if (inputConnection.source == null || inputConnection.destination == null) yield break;
+    if (activeConnections.Contains(inputConnection)) yield break; // Prevent re-entrance
 
     activeConnections.Add(inputConnection);
 
     try
     {
+      if (inputConnection.delay > 0f)
+      {
+        yield return new WaitForSeconds(inputConnection.delay);
+      }
+
+
       // If the destination is an OutputNode, we just set its state.
       if (inputConnection.destination is OutputNode outputNode)
       {
@@ -75,7 +91,7 @@ public class SignalCircuit
       {
         // Get all connections that feed into this gate
         var gateInputConnections = connections.Where(c => c.destination == logicGate).ToArray();
-        
+
         // Get ALL source nodes (InputNodes AND LogicGates) that feed into this gate
         var allInputSources = gateInputConnections.Select(c => c.source).ToArray();
 
@@ -90,7 +106,7 @@ public class SignalCircuit
         foreach (var outConn in gateOutputConnections)
         {
           if (!ValidateConnection(outConn)) continue;
-          PropagateSignalSync(outConn);
+          coroutineRunner.StartCoroutine(PropagateSignalAsync(outConn));
         }
       }
     }

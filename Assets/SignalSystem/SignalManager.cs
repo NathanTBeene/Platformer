@@ -28,6 +28,15 @@ public class SignalManager : MonoBehaviour
     }
 
     tickInterval = 1f / ticks;
+
+    // Initialize all circuits with this MonoBehaviour as the coroutine runner
+    if (circuits != null)
+    {
+      foreach (var circuit in circuits)
+      {
+        circuit.Initialize(this);
+      }
+    }
   }
 
   void Update()

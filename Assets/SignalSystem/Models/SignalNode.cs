@@ -20,6 +20,9 @@ public abstract class SignalNode : MonoBehaviour
 
   public void setState(bool newState)
   {
+    // If the state is the same, do nothing
+    if (isActive == newState) return;
+
     isActive = newState;
     if (isActive)
       _emitOn();
