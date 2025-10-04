@@ -17,7 +17,7 @@ public class WireManager : MonoBehaviour
   [Header("Wire Colors")]
   [SerializeField] private Color powerColor = Color.red;
   [SerializeField] private Color emptyColor = Color.black;
-  
+
   [Header("Power State")]
   [SerializeField] private bool isPowered = false;
 
@@ -121,27 +121,27 @@ public class WireManager : MonoBehaviour
   }
 }
 
-[CustomEditor(typeof(WireManager))]
-public class WireManagerEditor : Editor
-{
-  public override async void OnInspectorGUI()
-  {
-    DrawDefaultInspector();
+// [CustomEditor(typeof(WireManager))]
+// public class WireManagerEditor : Editor
+// {
+//   public override async void OnInspectorGUI()
+//   {
+//     DrawDefaultInspector();
 
-    WireManager wireManager = (WireManager)target;
-    
-    GUILayout.Space(10);
-    GUILayout.Label("Power Controls", EditorStyles.boldLabel);
-    
-    GUILayout.BeginHorizontal();
-    if (GUILayout.Button("Turn Power ON"))
-    {
-      await wireManager.PowerOn(wireManager.debugDuration);
-    }
-    if (GUILayout.Button("Turn Power OFF"))
-    {
-      await wireManager.PowerOff(wireManager.debugDuration);
-    }
-    GUILayout.EndHorizontal();
-  }
-}
+//     WireManager wireManager = (WireManager)target;
+
+//     GUILayout.Space(10);
+//     GUILayout.Label("Power Controls", EditorStyles.boldLabel);
+
+//     GUILayout.BeginHorizontal();
+//     if (GUILayout.Button("Turn Power ON"))
+//     {
+//       await wireManager.PowerOn(wireManager.debugDuration);
+//     }
+//     if (GUILayout.Button("Turn Power OFF"))
+//     {
+//       await wireManager.PowerOff(wireManager.debugDuration);
+//     }
+//     GUILayout.EndHorizontal();
+//   }
+// }
