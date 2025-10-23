@@ -76,7 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   rb: {fileID: 523355491250470474}
   animator: {fileID: 4078414723684327946}
-  moveSpeed: 8
+  moveSpeed: 6
   jumpForce: 14
   groundCheckDistance: 0.55
   groundLayer:

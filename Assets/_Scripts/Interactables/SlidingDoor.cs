@@ -23,7 +23,6 @@ public class SlidingDoor : MonoBehaviour
   {
     if (!outputNode)
     {
-      Debug.LogWarning("No output node assigned, defaulting to OutputNode component on this object.");
       outputNode = GetComponent<OutputNode>();
     }
 

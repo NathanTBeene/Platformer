@@ -25,51 +25,164 @@ public class MovingPlatform : MonoBehaviour
     [SerializeField] private Ease easeType = Ease.Linear;
 
     private Vector3 initialPosition;
+    private Tween currentTween;
+    private bool isMoving = false;
+    private bool isAtTarget = false;
+
+    private void OnEnable() {
+        if (!outputNode)
+        {
+            outputNode = GetComponent<OutputNode>();
+        }
+
+        if (outputNode)
+        {
+            outputNode.onStateChange += onStateChange;
+        }
+    }
 
     private void Start()
     {
         initialPosition = transform.position;
-        if (!outputNode)
-        {
-            Debug.LogWarning("No output node assigned, defaulting to OutputNode component on this object.");
-            outputNode = GetComponent<OutputNode>();
-        }
 
-        if (autoStart)
+        // Only auto start if there is no output node
+        if (autoStart && (outputNode == null))
         {
-            StartCoroutine(MovePlatform());
+            _startMove();
         }
     }
 
-    private void _onOutputOn(OutputNode sourceNode)
+    private void onStateChange(bool state)
     {
-        if (sourceNode.gameObject == gameObject)
+        if (isLooping)
         {
-            // Start moving
-            StopAllCoroutines();
-            StartCoroutine(MovePlatform());
+            if (state)
+                _startMove();
+            else
+                _stopMove();
+        }
+        else
+        {
+            if (state)
+                _moveToTarget();
+            else
+                _returnToStart();
         }
     }
 
-    // Move platform coroutine
-    // Moves the platform back and forth between two points
-    // If isLooping is true, it will loop indefinitely
-    // Otherwise it will only move when triggered
-    private IEnumerator MovePlatform()
+    private void _startMove()
     {
-        Vector3 targetPosition = initialPosition + (movementDirection == Direction.Horizontal ? Vector3.right : Vector3.up) * movementDistance;
-        Vector3 startPosition = initialPosition;
+        if (isMoving) return;
+        isMoving = true;
+        StartCoroutine(MovementLoop());
+    }
 
-        do
+    private void _stopMove()
+    {
+        if (!isMoving) return;
+        isMoving = false;
+        _stopCurrentMovement();
+    }
+
+    private void _moveToTarget()
+    {
+        Debug.Log("Moving to target");
+        if (isAtTarget) return;
+
+        // Kill any current wtween and stop coroutines
+        _stopCurrentMovement();
+
+        isMoving = true;
+        Vector3 targetPosition = _getTargetPosition();
+        currentTween = transform.DOMove(targetPosition, movementDuration).SetEase(easeType).OnComplete(() =>
         {
-            yield return transform.DOMove(targetPosition, movementDuration).SetEase(easeType).WaitForCompletion();
-            yield return new WaitForSeconds(pauseDuration);
+            isAtTarget = true;
+            isMoving = false;
+        });
+    }
 
-            // Swap start and target positions for return trip
-            Vector3 temp = startPosition;
-            startPosition = targetPosition;
-            targetPosition = temp;
+    private void _returnToStart()
+    {
+        Debug.Log("Returning to start");
+        if (!isAtTarget) return;
 
-        } while (isLooping);
+        _stopCurrentMovement();
+
+        isMoving = true;
+        currentTween = transform.DOMove(initialPosition, movementDuration).SetEase(easeType).OnComplete(() =>
+        {
+            isAtTarget = false;
+            isMoving = false;
+        });
+    }
+
+    private IEnumerator MovementLoop()
+    {
+        while (isMoving)
+        {
+            //Move to target
+            Vector3 targetPosition = _getTargetPosition();
+            currentTween = transform.DOMove(targetPosition, movementDuration).SetEase(easeType);
+            yield return currentTween.WaitForCompletion();
+
+            if (!isMoving) break;
+
+            //Pause at target
+            if (pauseDuration > 0f)
+            {
+                yield return new WaitForSeconds(pauseDuration);
+            }
+
+            if (!isMoving) break;
+
+            //Return to start
+            currentTween = transform.DOMove(initialPosition, movementDuration).SetEase(easeType);
+            yield return currentTween.WaitForCompletion();
+
+            if (!isMoving) break;
+
+            //Pause at start
+            if (pauseDuration > 0f)
+            {
+                yield return new WaitForSeconds(pauseDuration);
+            }
+        }
+    }
+
+    private Vector3 _getTargetPosition()
+    {
+        Vector3 targetPosition = initialPosition;
+
+        switch (movementDirection)
+        {
+            case Direction.Horizontal:
+                targetPosition += new Vector3(movementDistance, 0f, 0f);
+                break;
+            case Direction.Vertical:
+                targetPosition += new Vector3(0f, movementDistance, 0f);
+                break;
+        }
+        return targetPosition;
+    }
+
+    private void _stopCurrentMovement()
+    {
+        if (currentTween != null)
+        {
+            currentTween.Kill(true);
+            currentTween = null;
+        }
+
+        StopAllCoroutines();
+        transform.DOKill(true);
+    }
+
+    private void OnDisable() {
+        if (outputNode)
+        {
+            outputNode.onStateChange -= onStateChange;
+        }
+
+        _stopMove();
     }
 }
