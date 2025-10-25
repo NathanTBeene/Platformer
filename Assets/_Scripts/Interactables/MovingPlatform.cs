@@ -63,89 +63,84 @@ public class MovingPlatform : MonoBehaviour
         }
         else
         {
-            if (state)
-                _moveToTarget();
-            else
-                _returnToStart();
+            // Single cycle movement
+            // Move to target on true, return to start on false
         }
     }
 
     private void _startMove()
     {
+        // Prevent multiple starts
         if (isMoving) return;
+
+        // Start movement loop
         isMoving = true;
         StartCoroutine(MovementLoop());
     }
 
     private void _stopMove()
     {
-        if (!isMoving) return;
         isMoving = false;
-        _stopCurrentMovement();
-    }
 
-    private void _moveToTarget()
-    {
-        Debug.Log("Moving to target");
-        if (isAtTarget) return;
-
-        // Kill any current wtween and stop coroutines
-        _stopCurrentMovement();
-
-        isMoving = true;
-        Vector3 targetPosition = _getTargetPosition();
-        currentTween = transform.DOMove(targetPosition, movementDuration).SetEase(easeType).OnComplete(() =>
+        // Await current movement to finish
+        if (currentTween != null && currentTween.IsActive())
         {
-            isAtTarget = true;
-            isMoving = false;
-        });
+            currentTween.OnComplete(() =>
+            {
+                currentTween = null;
+            });
+        }
     }
 
-    private void _returnToStart()
+
+    private enum JumpPoint
     {
-        Debug.Log("Returning to start");
-        if (!isAtTarget) return;
-
-        _stopCurrentMovement();
-
-        isMoving = true;
-        currentTween = transform.DOMove(initialPosition, movementDuration).SetEase(easeType).OnComplete(() =>
-        {
-            isAtTarget = false;
-            isMoving = false;
-        });
+        Start,
+        Target
     }
 
+    private JumpPoint lastJumpPoint = JumpPoint.Start;
+
+    // Loop will always wait until the current movement is complete before stopping
+    // If stopped in the middle, it will start from the current position on next start
     private IEnumerator MovementLoop()
     {
+        bool moveToTarget = lastJumpPoint == JumpPoint.Start;
+
         while (isMoving)
         {
-            //Move to target
-            Vector3 targetPosition = _getTargetPosition();
-            currentTween = transform.DOMove(targetPosition, movementDuration).SetEase(easeType);
-            yield return currentTween.WaitForCompletion();
-
-            if (!isMoving) break;
-
-            //Pause at target
-            if (pauseDuration > 0f)
+            if (moveToTarget)
             {
-                yield return new WaitForSeconds(pauseDuration);
+                Vector3 targetPosition = _getTargetPosition();
+                currentTween = transform.DOMove(targetPosition, movementDuration).SetEase(easeType);
+                yield return currentTween.WaitForCompletion();
+
+                // Update last jump point
+                lastJumpPoint = JumpPoint.Target;
+
+                if (!isMoving) break;
+
+                //Pause at target
+                if (pauseDuration > 0f)
+                    yield return new WaitForSeconds(pauseDuration);
+            }
+            else
+            {
+                currentTween = transform.DOMove(initialPosition, movementDuration).SetEase(easeType);
+                yield return currentTween.WaitForCompletion();
+
+                // Update last jump point
+                lastJumpPoint = JumpPoint.Start;
+
+                if (!isMoving) break;
+
+                //Pause at start
+                if (pauseDuration > 0f)
+                    yield return new WaitForSeconds(pauseDuration);
             }
 
-            if (!isMoving) break;
-
-            //Return to start
-            currentTween = transform.DOMove(initialPosition, movementDuration).SetEase(easeType);
-            yield return currentTween.WaitForCompletion();
-
-            if (!isMoving) break;
-
-            //Pause at start
-            if (pauseDuration > 0f)
-            {
-                yield return new WaitForSeconds(pauseDuration);
-            }
+            // Toggle direction
+            moveToTarget = !moveToTarget;
         }
     }
 
@@ -163,18 +158,6 @@ public class MovingPlatform : MonoBehaviour
                 break;
         }
         return targetPosition;
-    }
-
-    private void _stopCurrentMovement()
-    {
-        if (currentTween != null)
-        {
-            currentTween.Kill(true);
-            currentTween = null;
-        }
-
-        StopAllCoroutines();
-        transform.DOKill(true);
     }
 
     private void OnDisable() {

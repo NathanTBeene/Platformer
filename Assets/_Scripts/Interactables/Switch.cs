@@ -9,9 +9,7 @@ public class Switch : MonoBehaviour
     [SerializeField] private WireManager wire;
     [SerializeField] private InputNode inputNode;
     [SerializeField] private Animator anim;
-    [SerializeField] private SpriteRenderer indicatorSprite;
-    [SerializeField] private Sprite indicatorON;
-    [SerializeField] private Sprite indicatorOFF;
+    [SerializeField] private PowerIndicator powerIndicator;
 
     [Header("Settings")]
     [SerializeField] private float switchCooldown = 0.2f;
@@ -72,7 +70,7 @@ public class Switch : MonoBehaviour
     private async Task _switch_on()
     {
         anim.SetBool("isOn", true);
-        indicatorSprite.sprite = indicatorON;
+        powerIndicator.TurnOn();
         _start_cooldown();
         await _fill_wire(true);
     }
@@ -80,7 +78,7 @@ public class Switch : MonoBehaviour
     private async Task _switch_off()
     {
         anim.SetBool("isOn", false);
-        indicatorSprite.sprite = indicatorOFF;
+        powerIndicator.TurnOff();
         _start_cooldown();
         await _fill_wire(false);
     }

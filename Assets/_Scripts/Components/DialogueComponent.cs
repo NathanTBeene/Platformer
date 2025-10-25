@@ -77,7 +77,13 @@ public class DialogueComponent : MonoBehaviour
 
     public IEnumerator HideDialogue()
     {
-        Debug.Log("Hiding dialogue");
+        // Wait for the text to finish revealing
+        while (maxVisibleCharacters < 1f)
+            yield return null;
+
+        // Wait for a short duration before hiding
+        yield return new WaitForSeconds(0.5f);
+
         yield return panelPopIn.PopOut();
         maxVisibleCharacters = 0f;
         _updateVisibleCharacters();
