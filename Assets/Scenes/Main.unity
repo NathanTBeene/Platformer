@@ -166,10 +166,10 @@ MonoBehaviour:
   EventSystemInstance: {fileID: 0}
   gameScenesConfig:
     scenes2D:
-    - name: PrototypeLevel
+    - name: Level1
       reference:
-        asset: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
-        guid: 8c9cfa26abfee488c85f1582747f6a02
+        asset: {fileID: 102900000, guid: 6593d8b8240174a478abf12f38851e5d, type: 3}
+        guid: 6593d8b8240174a478abf12f38851e5d
       type: 0
     scenes3D: []
     scenesGUI:

@@ -22,6 +22,7 @@ public class FlyingBotMovement : MonoBehaviour
 
     [Header("Waypoints need to be separate from the FlyingBot object.")]
     [SerializeField] private GameObject waypointContainer;
+    [SerializeField] private int startingWaypointIndex = 0;
     [SerializeField] private List<Vector3> waypoints; // Add children as waypoints
     private int currentWaypointIndex = 0;
     private Vector3 targetPosition;
@@ -37,10 +38,18 @@ public class FlyingBotMovement : MonoBehaviour
     private void Start()
     {
         _getWaypoints();
+        currentWaypointIndex = startingWaypointIndex % waypoints.Count;
+        _updateStartingPosition();
         if (waypoints.Count > 0)
         {
             _moveToNextWaypoint();
         }
+    }
+
+    private void _updateStartingPosition()
+    {
+        if (waypoints.Count == 0) return;
+        transform.position = waypoints[startingWaypointIndex % waypoints.Count];
     }
 
     public void PauseMovement()
@@ -74,6 +83,7 @@ public class FlyingBotMovement : MonoBehaviour
             StartCoroutine(WaitAtWaypoint());
         }
 
+        _handleSpriteDirection();
     }
 
     public void StopMovement()
@@ -181,8 +191,10 @@ public class FlyingBotMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (waypointContainer == null) return;
-        _getWaypoints();
         if (waypoints == null || waypoints.Count == 0) return;
+
+        if (!Application.isPlaying)
+            _getWaypoints();
 
         if (showGizmos)
         {

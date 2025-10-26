@@ -17,7 +17,7 @@ public class MainMenu : MonoBehaviour
     private void _onStartButtonClicked()
     {
         Debug.Log("Start Button Clicked - Load Game Scene");
-        GameController.Instance.Change2DScene("PrototypeLevel", true, true);
+        GameController.Instance.Change2DScene("Level1", true, true);
         GameController.Instance.UnloadScene("MainMenu");
     }
 

@@ -17,6 +17,8 @@ public class DialogData
         [TextArea(5, 3)]
         public string text;
         public float duration;
+        public bool autoNext = false; // If true, automatically proceed to next line after delay
+        public float autoDelay = 0f; // Delay before proceeding to next line
 
         public DialogLine(string text, float duration)
         {
@@ -29,6 +31,12 @@ public class DialogData
     public DialogType type;
 
     private int currentIndex = 0;
+    public int CurrentIndex => currentIndex;
+    private int displayedIndex = -1;
+
+    private DialogLine currentLine = null;
+    public DialogLine CurrentLine => currentLine;
+
     private string currentText;
 
     public DialogData() { }
@@ -38,48 +46,103 @@ public class DialogData
         this.type = type;
     }
 
-    public string GetNextDialogue()
+    public bool HasNextDialogue()
     {
-        Debug.Log("Getting next dialogue of type: " + type.ToString());
-        if (type == DialogType.Single)
+        switch (type)
         {
-            currentText = lines[0].text;
-            return currentText;
+            case DialogType.Single:
+                return false;
+            case DialogType.Sequence:
+                return displayedIndex < lines.Length - 1;
+            case DialogType.Repeat:
+                return lines.Length > 1;
+            case DialogType.Random:
+                return lines.Length > 1;
+            default:
+                return false;
         }
-        else if (type == DialogType.Sequence)
-        {
-            if (lines.Length == 0) return "";
-
-            string line = lines[currentIndex].text;
-            if (currentIndex < lines.Length - 1)
-            {
-                currentIndex++;
-            }
-            currentText = line;
-            return line;
-        }
-        else if (type == DialogType.Repeat)
-        {
-            if (lines.Length == 0) return "";
-
-            string line = lines[currentIndex].text;
-            currentIndex = (currentIndex + 1) % lines.Length;
-            currentText = line;
-            return line;
-        }
-        else if (type == DialogType.Random)
-        {
-            if (lines.Length == 0) return "";
-
-            int randomIndex = Random.Range(0, lines.Length);
-            currentText = lines[randomIndex].text;
-            return currentText;
-        }
-        return "";
     }
 
     public string GetCurrentDialogue()
     {
+        if (lines.Length == 0) return "";
+        if (currentLine == null)
+        {
+            _setCurrentLine();
+        }
+        return currentText ?? "";
+    }
+
+    public string GetNextDialogue()
+    {
+        Debug.Log("Getting next dialogue of type: " + type.ToString());
+
+        if (lines.Length == 0) return "";
+
+        switch (type)
+        {
+            case DialogType.Single:
+                _setCurrentToIndex(0);
+                break;
+            case DialogType.Sequence:
+                _setCurrentToIndex(currentIndex);
+                // Only advance index if not at the end
+                if (currentIndex < lines.Length - 1)
+                    displayedIndex = currentIndex;
+                    currentIndex++;
+                break;
+            case DialogType.Repeat:
+                _setCurrentToIndex(currentIndex);
+                displayedIndex = currentIndex;
+                currentIndex = (currentIndex + 1) % lines.Length;
+                break;
+            case DialogType.Random:
+                displayedIndex = currentIndex;
+                int randomIndex = Random.Range(0, lines.Length);
+                _setCurrentToIndex(randomIndex);
+                break;
+        }
+
         return currentText;
+    }
+
+    private void _setCurrentToIndex(int index)
+    {
+        if (index >= 0 && index < lines.Length)
+        {
+            currentLine = lines[index];
+            currentText = currentLine.text;
+        }
+    }
+
+    private void _setCurrentLine()
+    {
+        _setCurrentToIndex(currentIndex);
+    }
+
+    // Advance without getting text
+    public void AdvanceToNext()
+    {
+        if (!HasNextDialogue()) return;
+
+        switch (type)
+        {
+            case DialogType.Sequence:
+                if (currentIndex < lines.Length - 1)
+                    displayedIndex = currentIndex;
+                    currentIndex++;
+                    _setCurrentToIndex(currentIndex);
+                break;
+            case DialogType.Repeat:
+                displayedIndex = currentIndex;
+                currentIndex = (currentIndex + 1) % lines.Length;
+                _setCurrentToIndex(currentIndex);
+                break;
+            case DialogType.Random:
+                displayedIndex = currentIndex;
+                currentIndex = Random.Range(0, lines.Length);
+                _setCurrentToIndex(currentIndex);
+                break;
+        }
     }
 }

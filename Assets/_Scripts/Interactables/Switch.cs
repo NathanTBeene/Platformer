@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Switch : MonoBehaviour
 {
@@ -14,17 +12,26 @@ public class Switch : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float switchCooldown = 0.2f;
     [SerializeField] private float wireFillDuration = 0.5f;
+    [SerializeField] private bool startOn = false;
+    [SerializeField] private bool hideWireWhenOff = false;
 
     private bool canInteract = false;
     private bool isCoolingDown = false;
+    private bool isPlayerInRange = false;
 
-    void Start()
+    async void Start()
     {
         if (!inputNode)
         {
             inputNode = GetComponent<InputNode>();
         }
-        // _switch_off();
+
+        if (startOn)
+        {
+            await Task.Yield();
+            await _switch_on();
+            inputNode.setState(true);
+        }
     }
 
     void OnEnable()
@@ -42,6 +49,7 @@ public class Switch : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             canInteract = true;
+            isPlayerInRange = true;
         }
     }
 
@@ -50,11 +58,14 @@ public class Switch : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             canInteract = false;
+            isPlayerInRange = false;
         }
     }
 
     private async void _on_interact()
     {
+        if (!isPlayerInRange || !canInteract || isCoolingDown) return;
+
         if (!inputNode.isActive && canInteract && !isCoolingDown)
         {
             await _switch_on();
@@ -85,11 +96,9 @@ public class Switch : MonoBehaviour
 
     private void _start_cooldown()
     {
-        canInteract = false;
         isCoolingDown = true;
         Task.Delay((int)(switchCooldown * 1000)).ContinueWith(t =>
         {
-            canInteract = true;
             isCoolingDown = false;
         });
     }

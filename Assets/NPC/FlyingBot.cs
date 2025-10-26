@@ -1,94 +1,95 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 public class FlyingBot : MonoBehaviour {
     [SerializeField] private DialogueComponent dialogueComponent;
     [SerializeField] private FlyingBotMovement movementComponent;
+    [SerializeField] private GameObject spriteObject;
 
-    // If the dialogue has been shown for a certain duration, hide it and resume movement
-    // Only show dialogue after a cooldown period
-    [SerializeField] private float dialogueDisplayDuration = 2f;
-    [SerializeField] private float dialogueCooldownDuration = 1f;
+    [SerializeField] private float dialogueCooldown = 2.5f;
 
-    private Coroutine dialogueCoroutine;
-    private Coroutine cooldownCoroutine;
-    private bool isInCooldown = false;
+    private bool canSpeak = true;
+    private Coroutine cooldownCoroutine = null;
+
+
+    private void OnEnable() {
+        dialogueComponent.dialogueFinished += _onDialogueFinished;
+    }
+
+    private void OnDisable()
+    {
+        dialogueComponent.dialogueFinished -= _onDialogueFinished;
+    }
+
+    private void _onDialogueFinished(GameObject speaker)
+    {
+        if (speaker != gameObject) return;
+
+        if (cooldownCoroutine != null)
+            StopCoroutine(cooldownCoroutine);
+
+        cooldownCoroutine = StartCoroutine(DialogueCooldown());
+        ResumeMovement();
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Collision detected with " + other.gameObject.name);
-        if (other.gameObject.CompareTag("Player") && !isInCooldown)
+        if (other.CompareTag("Player"))
         {
-                _showDialogueAndPauseMovement();
+            if (!canSpeak) return;
+            canSpeak = false;
+            PauseMovement();
+            TriggerDialogue();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void TriggerDialogue()
     {
-        Debug.Log("Collision ended with " + other.gameObject.name);
-        if (other.gameObject.CompareTag("Player"))
+        if (dialogueComponent == null) return;
+        _facePlayer();
+        dialogueComponent.StartCoroutine(dialogueComponent.ShowDialogue());
+    }
+
+    public void PauseMovement()
+    {
+        if (movementComponent == null) return;
+        movementComponent.PauseMovement();
+    }
+
+    public void ResumeMovement()
+    {
+        if (movementComponent == null) return;
+        movementComponent.ResumeMovement();
+    }
+
+    public void StopMovement()
+    {
+        if (movementComponent == null) return;
+        movementComponent.StopMovement();
+    }
+
+    public void _facePlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
+
+        Vector3 directionToPlayer = player.transform.position - transform.position;
+        if (directionToPlayer.x > 0)
         {
-                _hideDialogueAndResumeMovement();
+            // Face right
+            spriteObject.transform.DOScaleX(1f, 0.2f);
+        }
+        else
+        {
+            // Face left
+            spriteObject.transform.DOScaleX(-1f, 0.2f);
         }
     }
 
-    private void _showDialogueAndPauseMovement()
+    private IEnumerator DialogueCooldown()
     {
-        if (!gameObject.activeInHierarchy) return;
-
-        if (dialogueComponent != null && movementComponent != null)
-        {
-            // Stop any existing timers
-            if (dialogueCoroutine != null)
-            {
-                StopCoroutine(dialogueCoroutine);
-            }
-            movementComponent.PauseMovement();
-
-            dialogueComponent.StartCoroutine(dialogueComponent.ShowDialogue());
-
-            // start auto-hide coroutine
-            dialogueCoroutine = StartCoroutine(_dialogueDisplayCoroutine());
-        }
-    }
-
-    private void _hideDialogueAndResumeMovement()
-    {
-        if (!gameObject.activeInHierarchy) return;
-
-        if (dialogueComponent != null && movementComponent != null)
-        {
-            if (dialogueCoroutine != null)
-            {
-                StopCoroutine(dialogueCoroutine);
-                dialogueCoroutine = null;
-            }
-
-            if (cooldownCoroutine != null)
-            {
-                StopCoroutine(cooldownCoroutine);
-                cooldownCoroutine = null;
-            }
-
-            dialogueComponent.StartCoroutine(dialogueComponent.HideDialogue());
-            movementComponent.ResumeMovement();
-
-            cooldownCoroutine = StartCoroutine(_dialogueCooldownCoroutine());
-        }
-    }
-
-    private IEnumerator _dialogueDisplayCoroutine()
-    {
-        yield return new WaitForSeconds(dialogueDisplayDuration);
-
-        _hideDialogueAndResumeMovement();
-    }
-
-    private IEnumerator _dialogueCooldownCoroutine()
-    {
-        isInCooldown = true;
-        yield return new WaitForSeconds(dialogueCooldownDuration);
-        isInCooldown = false;
-        cooldownCoroutine = null;
+        yield return new WaitForSeconds(dialogueCooldown);
+        canSpeak = true;
     }
 }

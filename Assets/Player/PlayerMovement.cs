@@ -21,11 +21,23 @@ public class PlayerMovement : MonoBehaviour
     public bool canMove = true;
     public bool canJump = true;
     private float directionX;
+    private float defaultJumpForce;
+
+    public void SetJumpForce(float newJumpForce)
+    {
+        jumpForce = newJumpForce;
+    }
+
+    public void ResetJumpForce()
+    {
+        jumpForce = defaultJumpForce;
+    }
 
     void Start()
     {
         InputManager.onMove += OnMove;
         InputManager.onJump += OnJump;
+        defaultJumpForce = jumpForce;
     }
 
     void Update()

@@ -12,6 +12,7 @@ public class MovingPlatform : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private OutputNode outputNode;
+    [SerializeField] private PowerIndicator powerIndicator;
 
     [Header("Settings")]
     [SerializeField] private bool autoStart = true;
@@ -66,6 +67,11 @@ public class MovingPlatform : MonoBehaviour
             // Single cycle movement
             // Move to target on true, return to start on false
         }
+
+        if (state)
+            powerIndicator?.TurnOn();
+        else
+            powerIndicator?.TurnOff();
     }
 
     private void _startMove()
