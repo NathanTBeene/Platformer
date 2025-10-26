@@ -237,6 +237,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3041603625455717242}
     m_Modifications:
+    - target: {fileID: 773390985981120415, guid: 3bb24d02dbb597d4dba154ac42fbdb91, type: 3}
+      propertyPath: speaker
+      value: 
+      objectReference: {fileID: 4485685533534986809}
+    - target: {fileID: 773390985981120415, guid: 3bb24d02dbb597d4dba154ac42fbdb91, type: 3}
+      propertyPath: dialogueData.lines.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3717638532508012493, guid: 3bb24d02dbb597d4dba154ac42fbdb91, type: 3}
       propertyPath: m_Name
       value: Canvas - Dialogue

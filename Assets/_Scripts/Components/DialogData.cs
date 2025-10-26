@@ -75,7 +75,6 @@ public class DialogData
 
     public string GetNextDialogue()
     {
-        Debug.Log("Getting next dialogue of type: " + type.ToString());
 
         if (lines.Length == 0) return "";
 

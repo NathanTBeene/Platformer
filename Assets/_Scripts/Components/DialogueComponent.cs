@@ -83,9 +83,6 @@ public class DialogueComponent : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("Displayed Line: " + displayedLine);
-        Debug.Log("Auto Next: " + (displayedLine != null ? displayedLine.autoNext.ToString() : "N/A"));
-        Debug.Log("Has Next Dialogue: " + dialogueData.HasNextDialogue());
         // Check autonext on the line we just displayed
         if (displayedLine != null && displayedLine.autoNext && dialogueData.HasNextDialogue())
         {
