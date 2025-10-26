@@ -191,10 +191,10 @@ public class FlyingBotMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (waypointContainer == null) return;
+        if(!Application.isPlaying)
+            _getWaypoints();
         if (waypoints == null || waypoints.Count == 0) return;
 
-        if (!Application.isPlaying)
-            _getWaypoints();
 
         if (showGizmos)
         {

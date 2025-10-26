@@ -4,7 +4,7 @@ public class GateView : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private LogicGate logicGate;
-    [SerializeField] private WireManager wireManager;
+    [SerializeField] private WireManager[] wireManagers;
 
     [Header("Gate Sprites")]
     [SerializeField] private GameObject input1Sprite;
@@ -61,14 +61,22 @@ public class GateView : MonoBehaviour
     {
         if (node == logicGate)
         {
-            await wireManager.PowerOn(0.2f);
+            foreach (var wireManager in wireManagers)
+            {
+                if (wireManager == null) continue;
+                await wireManager.PowerOn(0.2f);
+            }
         }
     }
     async void HandleSignalOff(SignalNode node)
     {
         if (node == logicGate)
         {
-            await wireManager.PowerOff(0.2f);
+            foreach (var wireManager in wireManagers)
+            {
+                if (wireManager == null) continue;
+                await wireManager.PowerOff(0.2f);
+            }
         }
     }
 }

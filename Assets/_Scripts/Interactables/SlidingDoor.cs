@@ -8,6 +8,7 @@ public class SlidingDoor : MonoBehaviour
   [Header("References")]
   [SerializeField] private GameObject doorSprite;
   [SerializeField] private OutputNode outputNode;
+  [SerializeField] private PowerIndicator powerIndicator;
 
   [Header("Settings")]
   [SerializeField] private Direction slideDirection = Direction.Up;
@@ -52,9 +53,15 @@ public class SlidingDoor : MonoBehaviour
   void onStateChange(bool state)
   {
     if (state)
+    {
       OpenDoor();
+      powerIndicator?.TurnOn();
+    }
     else
+    {
       CloseDoor();
+      powerIndicator?.TurnOff();
+    }
   }
 
   void OpenDoor()

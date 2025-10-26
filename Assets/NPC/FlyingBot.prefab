@@ -109,10 +109,7 @@ MonoBehaviour:
   maxWaitTime: 2
   waypointContainer: {fileID: 0}
   startingWaypointIndex: 0
-  waypoints:
-  - {x: -3.5594044, y: -0.33619452, z: 0}
-  - {x: 0.95059586, y: 1.4038054, z: 0}
-  - {x: 6.880595, y: -0.33619452, z: 0}
+  waypoints: []
   showGizmos: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
   gizmoSize: 0.1
