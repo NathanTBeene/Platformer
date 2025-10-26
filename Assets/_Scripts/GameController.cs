@@ -76,11 +76,20 @@ public class GameController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Also ensure EventSystem is not destroyed
-        if (EventSystemInstance != null)
+        // Find the EventSystem in the scene or create one if it doesn't exist
+        EventSystem eventSystem = FindFirstObjectByType<EventSystem>();
+        if (eventSystem == null)
         {
-            DontDestroyOnLoad(EventSystemInstance.gameObject);
-            _checkForDuplicateEventSystem();
+            GameObject eventSystemGO = new GameObject("EventSystem");
+            eventSystem = eventSystemGO.AddComponent<EventSystem>();
+            eventSystemGO.AddComponent<StandaloneInputModule>();
+            DontDestroyOnLoad(eventSystemGO);
+            EventSystemInstance = eventSystem;
+        }
+        else
+        {
+            DontDestroyOnLoad(eventSystem.gameObject);
+            EventSystemInstance = eventSystem;
         }
     }
 
