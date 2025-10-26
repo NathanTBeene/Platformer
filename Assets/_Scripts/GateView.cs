@@ -44,17 +44,27 @@ public class GateView : MonoBehaviour
     // For gates with multiple inputs like AND, OR
     void UpdateMulti()
     {
-        input1Sprite.SetActive(logicGate.input1);
-        input2Sprite.SetActive(logicGate.input2);
-        outputSprite.SetActive(logicGate.output);
+        if (input1Sprite != null)
+            input1Sprite.SetActive(logicGate.input1);
+        if (input2Sprite != null)
+            input2Sprite.SetActive(logicGate.input2);
+        if (outputSprite != null)
+            outputSprite.SetActive(logicGate.output);
     }
 
     // For single input gates like NOT
     void UpdateSingle()
     {
-        bool inputState = logicGate.output;
-        // Change output sprite based on state
-        outputSprite.GetComponent<SpriteRenderer>().sprite = inputState ? TrueSprite : FalseSprite;
+        if (outputSprite != null)
+        {
+            bool inputState = logicGate.output;
+            // Change output sprite based on state
+            var spriteRenderer = outputSprite.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = inputState ? TrueSprite : FalseSprite;
+            }
+        }
     }
 
     async void HandleSignalOn(SignalNode node)

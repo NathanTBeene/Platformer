@@ -21,6 +21,7 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("Interact button pressed.");
             onInteract?.Invoke();
         }
     }

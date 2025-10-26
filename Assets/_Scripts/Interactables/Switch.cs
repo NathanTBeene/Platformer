@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -28,9 +29,7 @@ public class Switch : MonoBehaviour
 
         if (startOn)
         {
-            await Task.Yield();
-            await _switch_on();
-            inputNode.setState(true);
+            StartCoroutine(_switch_on());
         }
     }
 
@@ -64,54 +63,56 @@ public class Switch : MonoBehaviour
 
     private async void _on_interact()
     {
+        Debug.Log("Attempting to interact with switch, " + gameObject.name);
+        Debug.Log($"isPlayerInRange: {isPlayerInRange}, canInteract: {canInteract}, isCoolingDown: {isCoolingDown}");
         if (!isPlayerInRange || !canInteract || isCoolingDown) return;
 
+        Debug.Log("Interacting with switch.");
+        Debug.Log($"InputNode state before interaction: {inputNode.isActive}");
         if (!inputNode.isActive && canInteract && !isCoolingDown)
         {
-            await _switch_on();
-            inputNode.setState(true);
+            StartCoroutine(_switch_on());
         }
         else if (inputNode.isActive && canInteract && !isCoolingDown)
         {
-            await _switch_off();
-            inputNode.setState(false);
+            StartCoroutine(_switch_off());
         }
     }
 
-    private async Task _switch_on()
+    private IEnumerator _switch_on()
     {
         anim.SetBool("isOn", true);
         powerIndicator.TurnOn();
-        _start_cooldown();
-        await _fill_wire(true);
+        StartCoroutine(_start_cooldown());
+        yield return _fill_wire(true);
+        inputNode.setState(true);
     }
 
-    private async Task _switch_off()
+    private IEnumerator _switch_off()
     {
         anim.SetBool("isOn", false);
         powerIndicator.TurnOff();
-        _start_cooldown();
-        await _fill_wire(false);
+        StartCoroutine(_start_cooldown());
+        yield return _fill_wire(false);
+        inputNode.setState(false);
     }
 
-    private void _start_cooldown()
+    private IEnumerator _start_cooldown()
     {
         isCoolingDown = true;
-        Task.Delay((int)(switchCooldown * 1000)).ContinueWith(t =>
-        {
-            isCoolingDown = false;
-        });
+        yield return new WaitForSeconds(switchCooldown);
+        isCoolingDown = false;
     }
 
-    private async Task _fill_wire(bool toOn)
+    private IEnumerator _fill_wire(bool toOn)
     {
         if (wire != null)
         {
             if (toOn)
-                await wire.PowerOn(wireFillDuration);
+                yield return wire.PowerOn(wireFillDuration);
             else
                 // Power off should be really fast.
-                await wire.PowerOff(wireFillDuration * 0.5f);
+                yield return wire.PowerOff(wireFillDuration * 0.5f);
         }
     }
 }

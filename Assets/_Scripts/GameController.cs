@@ -95,9 +95,12 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        Change2DScene(initialScene2D, true, true);
-        Change3DScene(initialScene3D, true, true);
-        ChangeGUIScene(initialSceneGUI, true, true);
+        if (!string.IsNullOrEmpty(initialScene2D))
+            Change2DScene(initialScene2D, true, true);
+        if (!string.IsNullOrEmpty(initialScene3D))
+            Change3DScene(initialScene3D, true, true);
+        if (!string.IsNullOrEmpty(initialSceneGUI))
+            ChangeGUIScene(initialSceneGUI, true, true);
     }
 
     public void Change2DScene(string sceneName, bool visible = true, bool standalone = false)
