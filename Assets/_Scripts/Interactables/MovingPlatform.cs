@@ -28,7 +28,6 @@ public class MovingPlatform : MonoBehaviour
     private Vector3 initialPosition;
     private Tween currentTween;
     private bool isMoving = false;
-    private bool isAtTarget = false;
 
     private void OnEnable() {
         if (!outputNode)

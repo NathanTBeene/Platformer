@@ -20,7 +20,7 @@ public class Switch : MonoBehaviour
     private bool isCoolingDown = false;
     private bool isPlayerInRange = false;
 
-    async void Start()
+    void Start()
     {
         if (!inputNode)
         {
@@ -61,14 +61,10 @@ public class Switch : MonoBehaviour
         }
     }
 
-    private async void _on_interact()
+    private void _on_interact()
     {
-        Debug.Log("Attempting to interact with switch, " + gameObject.name);
-        Debug.Log($"isPlayerInRange: {isPlayerInRange}, canInteract: {canInteract}, isCoolingDown: {isCoolingDown}");
         if (!isPlayerInRange || !canInteract || isCoolingDown) return;
 
-        Debug.Log("Interacting with switch.");
-        Debug.Log($"InputNode state before interaction: {inputNode.isActive}");
         if (!inputNode.isActive && canInteract && !isCoolingDown)
         {
             StartCoroutine(_switch_on());

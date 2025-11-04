@@ -55,18 +55,22 @@ public class DialogueComponent : MonoBehaviour
     // If duration is -1, use the default displayDuration
     // Text is revealed letter by letter.
     public IEnumerator ShowDialogue(float duration = -1f, bool popIn = true)
-    {
+  {
+        // Reset and animate visible characters
+        // This must be first to avoid visual bugs with WEBGL builds
+        maxVisibleCharacters = 0f;
+
         // Set the dialogue text
         _setDialogueText();
+        _updateVisibleCharacters();
+
+
         var displayedLine = dialogueData.CurrentLine;
 
         if (popIn)
             yield return panelPopIn.PopIn();
 
 
-        // Reset and animate visible characters
-        maxVisibleCharacters = 0f;
-        _updateVisibleCharacters();
 
         float actualDuration = duration < 0 ? textShowDuration : duration;
         if (displayedLine != null && displayedLine.duration > 0f)
