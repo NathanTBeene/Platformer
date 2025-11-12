@@ -53,30 +53,17 @@ public class WireManager : MonoBehaviour
   }
 
   // Power turning on should go from fill 0 to fill 1
-  public async Task PowerOn(float duration = 1f)
+  public IEnumerator PowerOn(float duration = 1f)
   {
     StopAllCoroutines();
-    await StartCoroutineAsync(_fill(0f, 1f, duration, true));
+    yield return StartCoroutine(_fill(0f, 1f, duration, true));
   }
 
   // Power turning off should go from fill 1 to fill 2
-  public async Task PowerOff(float duration = 1f)
+  public IEnumerator PowerOff(float duration = 1f)
   {
     StopAllCoroutines();
-    await StartCoroutineAsync(_fill(1f, 2f, duration, false));
-  }
-
-  private Task StartCoroutineAsync(IEnumerator coroutine)
-  {
-    var tcs = new TaskCompletionSource<bool>();
-    StartCoroutine(WrapCoroutine(coroutine, tcs));
-    return tcs.Task;
-  }
-
-  private IEnumerator WrapCoroutine(IEnumerator coroutine, TaskCompletionSource<bool> tcs)
-  {
-    yield return StartCoroutine(coroutine);
-    tcs.SetResult(true);
+    yield return StartCoroutine(_fill(1f, 2f, duration, false));
   }
 
   private IEnumerator _fill(float startFill, float endFill, float duration, bool powerState = false)

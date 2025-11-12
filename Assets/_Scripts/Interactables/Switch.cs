@@ -14,7 +14,6 @@ public class Switch : MonoBehaviour
     [SerializeField] private float switchCooldown = 0.2f;
     [SerializeField] private float wireFillDuration = 0.5f;
     [SerializeField] private bool startOn = false;
-    [SerializeField] private bool hideWireWhenOff = false;
 
     private bool canInteract = false;
     private bool isCoolingDown = false;

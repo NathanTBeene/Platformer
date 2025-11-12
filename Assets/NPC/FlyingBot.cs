@@ -13,12 +13,15 @@ public class FlyingBot : MonoBehaviour {
     private Coroutine cooldownCoroutine = null;
 
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
+        if (dialogueComponent == null) return;
         dialogueComponent.dialogueFinished += _onDialogueFinished;
     }
 
     private void OnDisable()
     {
+        if (dialogueComponent == null) return;
         dialogueComponent.dialogueFinished -= _onDialogueFinished;
     }
 

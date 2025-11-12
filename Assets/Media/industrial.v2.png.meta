@@ -9167,6 +9167,94 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: industrial.v2_23
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c79f97cafa838e48a00baa2d9f5b9c0
+      internalID: -682342428194479098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrial.v2_24
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc096b1c81be739459da19bac6eed70a
+      internalID: -1383392668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrial.v2_47
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 384
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 187c4f771db076d49876de62fb8bb78a
+      internalID: -1185019554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrial.v2_49
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcf05e2b3ca2a054e8e16740bb2080c7
+      internalID: 3106309005643651700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -9338,6 +9426,7 @@ TextureImporter:
       industrial.v2_237: -1066606802
       industrial.v2_238: 949829563
       industrial.v2_239: -420513898
+      industrial.v2_24: -1383392668
       industrial.v2_240: 13717520
       industrial.v2_241: -1063764394
       industrial.v2_242: -649691084
@@ -9529,6 +9618,7 @@ TextureImporter:
       industrial.v2_44: 3160968124868375416
       industrial.v2_45: -1004530910672130726
       industrial.v2_46: 2116559796527337840
+      industrial.v2_47: -1185019554
       industrial.v2_48: -921997585626578070
       industrial.v2_49: 3106309005643651700
       industrial.v2_5: 4314947523328856486

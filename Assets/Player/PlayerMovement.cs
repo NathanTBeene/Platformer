@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -18,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     public bool isOnFloor;
 
+
+    public bool enableInputMovement = true;
     public bool canMove = true;
     public bool canJump = true;
     private float directionX;
@@ -97,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnMove(float direction)
     {
+        if (!enableInputMovement) return;
         directionX = direction;
     }
 
@@ -117,5 +121,31 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void setCanMove(bool value) => canMove = value;
-    public void setCanJump(bool value) => canJump = value;
+  public void setCanJump(bool value) => canJump = value;
+
+  public void StartMovingLeft()
+  {
+    setCanMove(true);
+    setCanJump(true);
+    directionX = -1;
+  }
+
+  public void StartMovingRight()
+  {
+    setCanMove(true);
+    setCanJump(true);
+    directionX = 1;
+  }
+
+  public void StopMoving()
+  {
+    setCanMove(false);
+    setCanJump(false);
+    directionX = 0;
+  }
+
+  public void Jump()
+  {
+    _jump();
+  }
 }

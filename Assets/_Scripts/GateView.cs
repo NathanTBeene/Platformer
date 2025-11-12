@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GateView : MonoBehaviour
@@ -16,6 +17,7 @@ public class GateView : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private bool isSingleInput = false;
+    [SerializeField] private float wireFillDuration = 0.5f;
 
 
     void OnEnable()
@@ -67,25 +69,64 @@ public class GateView : MonoBehaviour
         }
     }
 
-    async void HandleSignalOn(SignalNode node)
+    void HandleSignalOn(SignalNode node)
     {
-        if (node == logicGate)
+      if (node == logicGate)
+      {
+        StartCoroutine(PowerOnWires());
+      }
+    }
+
+    void HandleSignalOff(SignalNode node)
+    {
+      if (node == logicGate)
+      {
+        StartCoroutine(PowerOffWires());
+      }
+    }
+
+    private IEnumerator PowerOnWires()
+    {
+        Coroutine[] wireCoroutines = new Coroutine[wireManagers.Length];
+
+        for (int i = 0; i < wireManagers.Length; i++)
         {
-            foreach (var wireManager in wireManagers)
+          var wire = wireManagers[i];
+          if (wire != null)
+          {
+            wireCoroutines[i] = StartCoroutine(wire.PowerOn(wireFillDuration));
+          }
+        }
+
+        // Wait for all wire coroutines to complete
+        foreach (var coroutine in wireCoroutines)
+        {
+            if (coroutine != null)
             {
-                if (wireManager == null) continue;
-                await wireManager.PowerOn(0.2f);
+                yield return coroutine;
             }
         }
     }
-    async void HandleSignalOff(SignalNode node)
+
+    private IEnumerator PowerOffWires()
     {
-        if (node == logicGate)
+        Coroutine[] wireCoroutines = new Coroutine[wireManagers.Length];
+
+        for (int i = 0; i < wireManagers.Length; i++)
         {
-            foreach (var wireManager in wireManagers)
+          var wire = wireManagers[i];
+          if (wire != null)
+          {
+            wireCoroutines[i] = StartCoroutine(wire.PowerOff(wireFillDuration * 0.5f));
+          }
+        }
+
+        // Wait for all wire coroutines to complete
+        foreach (var coroutine in wireCoroutines)
+        {
+            if (coroutine != null)
             {
-                if (wireManager == null) continue;
-                await wireManager.PowerOff(0.2f);
+                yield return coroutine;
             }
         }
     }
