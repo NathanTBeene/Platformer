@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
     public static event Action<float> onMove;
     public static event Action onJump;
     public static event Action onInteract;
+    // public static event Action onPause;
 
 
     void Update()
@@ -23,6 +24,14 @@ public class InputManager : MonoBehaviour
         {
             Debug.Log("Interact button pressed.");
             onInteract?.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (GameController.Instance)
+            {
+                GameController.Instance.TogglePauseGame();
+            }
         }
     }
 }

@@ -54,6 +54,7 @@ public class GameController : MonoBehaviour
 
     public static GameController Instance;
     public EventSystem EventSystemInstance;
+    public bool IsPaused = false;
 
     [SerializeField] private GameScenesConfig gameScenesConfig;
 
@@ -179,6 +180,7 @@ public class GameController : MonoBehaviour
         yield return asyncLoad;
 
         _checkForDuplicateEventSystem();
+        _checkForDuplicateAudioListener();
         Scene loadedScene = SceneManager.GetSceneByPath(sceneRef.Path);
 
         if (!visible)
@@ -233,5 +235,97 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void _checkForDuplicateAudioListener()
+    {
+        var audioListeners = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+        if (audioListeners.Length > 1)
+        {
+            for (int i = 0; i < audioListeners.Length; i++)
+            {
+                if (audioListeners[i] != Camera.main.GetComponent<AudioListener>())
+                {
+                    Destroy(audioListeners[i]);
+                }
+            }
+        }
+    }
+
+    public void TogglePauseGame()
+    {
+        // Check if we are on the main menu
+        if (SceneManager.GetActiveScene().name == "MainMenu") return;
+
+        if (IsPaused)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            PauseGame();
+        }
+    }
+
+    public void PauseGame()
+    {
+        // Additvely add a pause menu scene
+        ChangeGUIScene("PauseMenu", true, false);
+        Time.timeScale = 0f;
+        IsPaused = true;
+    }
+
+    public void ResumeGame()
+    {
+        UnloadScene("PauseMenu");
+        Time.timeScale = 1f;
+        IsPaused = false;
+    }
+
+    public void BackToMainMenu()
+    {
+        var current2DScenes = new List<SceneReference>(_current2DScenes);
+        var current3DScenes = new List<SceneReference>(_current3DScenes);
+        var currentGUIScenes = new List<SceneReference>(_currentGUIScenes);
+
+        foreach (var scene in current2DScenes)
+        {
+            string sceneName = _getSceneNameFromReference(scene);
+            UnloadScene(sceneName);
+        }
+
+        foreach (var scene in current3DScenes)
+        {
+            string sceneName = _getSceneNameFromReference(scene);
+            UnloadScene(sceneName);
+        }
+
+        foreach (var scene in currentGUIScenes)
+        {
+            string sceneName = _getSceneNameFromReference(scene);
+            UnloadScene(sceneName);
+        }
+
+        // Load the main menu scene
+        ChangeGUIScene("MainMenu", true, true);
+        if (IsPaused)
+        {
+            Time.timeScale = 1f;
+            IsPaused = false;
+        }
+    }
+
+    private string _getSceneNameFromReference(SceneReference sceneRef)
+    {
+        string path = sceneRef.Path;
+        int lastSlashIndex = path.LastIndexOf('/');
+        int lastDotIndex = path.LastIndexOf('.');
+
+        if (lastSlashIndex >= 0 && lastDotIndex > lastSlashIndex)
+        {
+            return path.Substring(lastSlashIndex + 1, lastDotIndex - lastSlashIndex - 1);
+        }
+
+        return path; // Fallback to full path if parsing fails
     }
 }

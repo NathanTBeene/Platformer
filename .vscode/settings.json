@@ -68,5 +68,6 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "Platformer.sln"
+    "dotnet.defaultSolution": "Platformer.sln",
+    "editor.tabSize": 4
 }
