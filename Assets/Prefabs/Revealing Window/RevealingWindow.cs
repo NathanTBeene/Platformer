@@ -3,68 +3,111 @@ using UnityEngine;
 
 public class RevealingWindow : MonoBehaviour
 {
-  [Header("References")]
-  [SerializeField] private OutputNode outputNode;
-  [SerializeField] private GameObject leftDoor;
-  [SerializeField] private GameObject rightDoor;
-
-  [Header("Settings")]
-  [SerializeField] private float slideDistance = 2f;
-  [SerializeField] private float slideDuration = 1f;
-  [SerializeField] private Ease easeType = Ease.InOutSine;
-  [SerializeField] private bool autoStart = true;
-
-  private void OnEnable()
-  {
-    if (!outputNode)
+    enum Direction
     {
-      outputNode = GetComponent<OutputNode>();
+        Horizontal,
+        Vertical
     }
 
-    if (outputNode)
-    {
-      outputNode.onStateChange += _onStateChange;
-    }
-  }
+    [Header("References")]
+    [SerializeField] private OutputNode outputNode;
+    [SerializeField] private GameObject leftDoor;
+    [SerializeField] private GameObject rightDoor;
 
-  private void OnDisable()
-  {
-    if (outputNode)
-    {
-      outputNode.onStateChange -= _onStateChange;
-    }
-  }
+    [Header("Settings")]
+    [SerializeField] private Direction direction = Direction.Horizontal;
+    [SerializeField] private float slideDistance = 2f;
+    [SerializeField] private float slideDuration = 1f;
+    [SerializeField] private Ease easeType = Ease.InOutSine;
+    [SerializeField] private bool autoStart = true;
 
-  private void Start()
-  {
-    // Only auto start if there is no output node
-    if (autoStart)
+    private void OnEnable()
     {
-      _openWindow();
-    }
-  }
+        if (!outputNode)
+        {
+        outputNode = GetComponent<OutputNode>();
+        }
 
-  private void _onStateChange(bool state)
-  {
-    if (state)
+        if (outputNode)
+        {
+        outputNode.onStateChange += _onStateChange;
+        }
+    }
+
+    private void OnDisable()
     {
-      _openWindow();
+        if (outputNode)
+        {
+        outputNode.onStateChange -= _onStateChange;
+        }
     }
-    else
+
+    private void Start()
     {
-      _closeWindow();
+        // Only auto start if there is no output node
+        if (autoStart)
+        {
+        _openWindow();
+        }
     }
-  }
 
-  private void _openWindow()
-  {
-    leftDoor.transform.DOMoveX(leftDoor.transform.position.x - slideDistance, slideDuration).SetEase(easeType);
-    rightDoor.transform.DOMoveX(rightDoor.transform.position.x + slideDistance, slideDuration).SetEase(easeType);
-  }
+    private void _onStateChange(bool state)
+    {
+        if (state)
+        {
+        _openWindow();
+        }
+        else
+        {
+        _closeWindow();
+        }
+    }
 
-  private void _closeWindow()
-  {
-    leftDoor.transform.DOMoveX(leftDoor.transform.position.x + slideDistance, slideDuration).SetEase(easeType);
-    rightDoor.transform.DOMoveX(rightDoor.transform.position.x - slideDistance, slideDuration).SetEase(easeType);
-  }
+    private void _openWindow()
+    {
+        if (direction == Direction.Horizontal)
+        {
+            _openHorizontal();
+        }
+        else
+        {
+            _openVertical();
+        }
+    }
+
+    private void _openHorizontal()
+    {
+        leftDoor.transform.DOMoveX(leftDoor.transform.position.x - slideDistance, slideDuration).SetEase(easeType);
+        rightDoor.transform.DOMoveX(rightDoor.transform.position.x + slideDistance, slideDuration).SetEase(easeType);
+    }
+
+    private void _openVertical()
+    {
+        leftDoor.transform.DOMoveY(leftDoor.transform.position.y + slideDistance, slideDuration).SetEase(easeType);
+        rightDoor.transform.DOMoveY(rightDoor.transform.position.y - slideDistance, slideDuration).SetEase(easeType);
+    }
+
+    private void _closeWindow()
+    {
+        if (direction == Direction.Horizontal)
+        {
+            _closeHorizontal();
+        }
+        else
+        {
+            _closeVertical();
+        }
+    }
+
+    private void _closeVertical()
+    {
+        leftDoor.transform.DOMoveY(leftDoor.transform.position.y - slideDistance, slideDuration).SetEase(easeType);
+        rightDoor.transform.DOMoveY(rightDoor.transform.position.y + slideDistance, slideDuration).SetEase(easeType);
+    }
+
+    private void _closeHorizontal()
+    {
+        leftDoor.transform.DOMoveX(leftDoor.transform.position.x + slideDistance, slideDuration).SetEase(easeType);
+        rightDoor.transform.DOMoveX(rightDoor.transform.position.x - slideDistance, slideDuration).SetEase(easeType);
+    }
 }

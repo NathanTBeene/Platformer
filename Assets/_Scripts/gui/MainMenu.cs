@@ -7,25 +7,43 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Button exitButton;
     [SerializeField] private OutputNode outputNode;
 
+    [SerializeField] private InputNode continueInputNode;
+    [SerializeField] private Button continueButton;
     private void OnEnable()
     {
         startButton.onClick.AddListener(_onStartButtonClicked);
+        continueButton.onClick.AddListener(_onContinueButtonClicked);
         exitButton.onClick.AddListener(_onExitButtonClicked);
+
+    }
+
+    private void Start()
+    {
+        if (continueButton != null && GameController.Instance.HasSaveData())
+        {
+            continueButton.gameObject.SetActive(true);
+            continueInputNode.setState(true);
+        } else {
+            continueButton.gameObject.SetActive(false);
+            continueInputNode.setState(false);
+        }
     }
 
     private void _onStartButtonClicked()
     {
         if (!outputNode.isActive) return;
-        Debug.Log("Start Button Clicked - Load Game Scene");
-        GameController.Instance.Change2DScene("Level1", true, true);
-        GameController.Instance.UnloadScene("MainMenu");
+        GameController.Instance.StartNewGame();
+    }
+
+    private void _onContinueButtonClicked()
+    {
+        if (!outputNode.isActive) return;
+        GameController.Instance.ContinueGame();
     }
 
     private void _onExitButtonClicked()
     {
         if (!outputNode.isActive) return;
-        Debug.Log("Exit Button Clicked - Quit Application");
-        // Add logic to quit the application
         Application.Quit();
     }
 
@@ -33,5 +51,6 @@ public class MainMenu : MonoBehaviour
     {
         startButton.onClick.RemoveListener(_onStartButtonClicked);
         exitButton.onClick.RemoveListener(_onExitButtonClicked);
+        continueButton.onClick.RemoveListener(_onContinueButtonClicked);
     }
 }
