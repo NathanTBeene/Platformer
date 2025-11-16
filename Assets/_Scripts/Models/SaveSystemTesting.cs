@@ -1,5 +1,7 @@
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SaveSystemTester : MonoBehaviour
 {
@@ -101,6 +103,7 @@ public class SaveSystemTester : MonoBehaviour
         Debug.Log($"Found {saves.Length} save files: {string.Join(", ", saves)}");
     }
 
+    #if UNITY_EDITOR
     private void OnGUI()
     {
         GUILayout.BeginArea(new Rect(10, 10, 300, 200));
@@ -126,4 +129,5 @@ public class SaveSystemTester : MonoBehaviour
 
         GUILayout.EndArea();
     }
+    #endif
 }
