@@ -36,10 +36,20 @@ public class PlayerMovement : MonoBehaviour
         jumpForce = defaultJumpForce;
     }
 
-    void Start()
+    void OnEnable()
     {
         InputManager.onMove += OnMove;
         InputManager.onJump += OnJump;
+    }
+
+    void OnDisable()
+    {
+        InputManager.onMove -= OnMove;
+        InputManager.onJump -= OnJump;
+    }
+
+    void Start()
+    {
         defaultJumpForce = jumpForce;
     }
 

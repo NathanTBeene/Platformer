@@ -41,30 +41,43 @@ public class SaveSystemTester : MonoBehaviour
     [ContextMenu("Test Save")]
     public void TestSave()
     {
-        // Create mock data for testing
-        Vector3 playerPos = new Vector3(1, 2, 3);
-        var scenes2D = new System.Collections.Generic.List<string> { "TestScene2D" };
-        var scenes3D = new System.Collections.Generic.List<string> { "TestScene3D" };
-        var scenesGUI = new System.Collections.Generic.List<string> { "TestSceneGUI" };
+        if (GameController.Instance != null)
+        {
+            // Use the actual game controller's save system
+            GameController.Instance.SaveGame();
+        }
+        else
+        {
+            // Create simple mock data for testing
+            Vector3 playerPos = new Vector3(1, 2, 3);
+            string sceneName = "TestScene";
 
-        SaveData testSave = new SaveData(playerPos, scenes2D, scenes3D, scenesGUI, "TestScene", null);
-        testSave.SaveToFile(testFileName);
+            SaveData testSave = new SaveData(sceneName, null);
+            testSave.SaveToFile(testFileName);
 
-        Debug.Log("Test save created!");
+            Debug.Log("Test save created!");
+        }
     }
 
     [ContextMenu("Test Load")]
     public void TestLoad()
     {
-        SaveData loadedData = SaveData.LoadFromFile(testFileName);
-        if (loadedData != null)
+        if (GameController.Instance != null)
         {
-            Debug.Log($"Loaded save data - Player Position: {loadedData.playerPosition}");
-            Debug.Log($"Loaded Scenes 2D: {string.Join(", ", loadedData.loadedScenes2D)}");
+            GameController.Instance.LoadGame();
         }
         else
         {
-            Debug.Log("No save data found!");
+            SaveData loadedData = SaveData.LoadFromFile(testFileName);
+            if (loadedData != null)
+            {
+                Debug.Log($"Loaded save data - Scene: {loadedData.sceneName}");
+                Debug.Log($"Save Point Position: {loadedData.savePointPosition}");
+            }
+            else
+            {
+                Debug.Log("No save data found!");
+            }
         }
     }
 

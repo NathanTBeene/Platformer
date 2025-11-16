@@ -4,17 +4,26 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private Button startButton;
-    [SerializeField] private Button exitButton;
-    [SerializeField] private OutputNode outputNode;
-
-    [SerializeField] private InputNode continueInputNode;
     [SerializeField] private Button continueButton;
+    [SerializeField] private Button exitButton;
+
+    [SerializeField] private OutputNode outputNode;
+    [SerializeField] private InputNode continueInputNode;
+
+
     private void OnEnable()
     {
         startButton.onClick.AddListener(_onStartButtonClicked);
         continueButton.onClick.AddListener(_onContinueButtonClicked);
         exitButton.onClick.AddListener(_onExitButtonClicked);
 
+    }
+
+    private void OnDisable()
+    {
+        startButton.onClick.RemoveListener(_onStartButtonClicked);
+        exitButton.onClick.RemoveListener(_onExitButtonClicked);
+        continueButton.onClick.RemoveListener(_onContinueButtonClicked);
     }
 
     private void Start()
@@ -45,12 +54,5 @@ public class MainMenu : MonoBehaviour
     {
         if (!outputNode.isActive) return;
         Application.Quit();
-    }
-
-    private void OnDisable()
-    {
-        startButton.onClick.RemoveListener(_onStartButtonClicked);
-        exitButton.onClick.RemoveListener(_onExitButtonClicked);
-        continueButton.onClick.RemoveListener(_onContinueButtonClicked);
     }
 }

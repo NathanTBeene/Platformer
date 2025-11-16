@@ -10,18 +10,9 @@ public class SaveData
     private static readonly string SAVE_EXTENSION = ".sav";
     private static readonly string SAVE_FOLDER = "SaveData";
 
-    // World State Data
-    public Vector3 playerPosition;
-    public List<string> loadedScenes2D = new List<string>();
-    public List<string> loadedScenes3D = new List<string>();
-    public List<string> loadedScenesGUI = new List<string>();
-
     // Save Point Data
-    public string savePointSceneName;
+    public string sceneName;
     public Vector3 savePointPosition;
-
-    // Game Progress Data
-    public float playTime;
 
 
     public SaveData()
@@ -29,20 +20,13 @@ public class SaveData
         // Default constructor for JSON serialization
     }
 
-    public SaveData(Vector3 playerPos, List<string> scenes2D, List<string> scenes3D, List<string> scenesGUI, string savePointScene, SavePoint savePoint)
+    public SaveData(string sceneName, SavePoint savePoint)
     {
-        playerPosition = playerPos;
-        loadedScenes2D = new List<string>(scenes2D);
-        loadedScenes3D = new List<string>(scenes3D);
-        loadedScenesGUI = new List<string>(scenesGUI);
-
         if (savePoint != null)
         {
-            savePointSceneName = savePointScene;
-            savePointPosition = savePoint.GetRespawnPosition();
+            this.sceneName = sceneName;
+            this.savePointPosition = savePoint.GetRespawnPosition();
         }
-
-        playTime = Time.time;
     }
 
     public string ToJSON()

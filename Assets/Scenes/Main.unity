@@ -163,30 +163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c729d643f3ea9d848ba453a291a81a67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
-  EventSystemInstance: {fileID: 0}
-  IsPaused: 0
-  gameScenesConfig:
-    scenes2D:
-    - name: Level1
-      reference:
-        asset: {fileID: 102900000, guid: 6593d8b8240174a478abf12f38851e5d, type: 3}
-        guid: 6593d8b8240174a478abf12f38851e5d
-      type: 0
-    scenes3D: []
-    scenesGUI:
-    - name: MainMenu
-      reference:
-        asset: {fileID: 102900000, guid: 21c907850b349654cb1c043e8f192fa6, type: 3}
-        guid: 21c907850b349654cb1c043e8f192fa6
-      type: 2
-    - name: PauseMenu
-      reference:
-        asset: {fileID: 102900000, guid: 88b454828c4fe9f4883b35c2428e7aa2, type: 3}
-        guid: 88b454828c4fe9f4883b35c2428e7aa2
-      type: 2
-  initialScene2D: 
-  initialScene3D: 
-  initialSceneGUI: MainMenu
+  eventSystemInstance: {fileID: 2007354217}
+  scenes: []
 --- !u!1 &2007354215
 GameObject:
   m_ObjectHideFlags: 0

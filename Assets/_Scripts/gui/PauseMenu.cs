@@ -9,12 +9,22 @@ public class PauseMenu : MonoBehaviour
 
     private void Awake()
     {
-        if (GameController.Instance)
+        if (!GameController.Instance)
         {
-            resumeButton.onClick.AddListener(OnResumeClicked);
-            mainMenuButton.onClick.AddListener(OnMainMenuClicked);
-            quitButton.onClick.AddListener(OnQuitClicked);
+            Debug.LogError("GameController instance not found in the scene.");
+            return;
         }
+
+        resumeButton.onClick.AddListener(OnResumeClicked);
+        mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+        quitButton.onClick.AddListener(OnQuitClicked);
+    }
+
+    private void OnDestroy()
+    {
+        resumeButton.onClick.RemoveListener(OnResumeClicked);
+        mainMenuButton.onClick.RemoveListener(OnMainMenuClicked);
+        quitButton.onClick.RemoveListener(OnQuitClicked);
     }
 
     private void OnResumeClicked()

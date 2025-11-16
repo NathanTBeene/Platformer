@@ -1,4 +1,3 @@
-using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -30,5 +29,11 @@ public class FollowCamera : MonoBehaviour
         {
             transform.position = new Vector3(followTarget.transform.position.x, followTarget.transform.position.y, transform.position.z) + offset;
         }
+    }
+
+    // Teleports the camera instantly to the target position
+    public void TeleportToTarget()
+    {
+        transform.position = new Vector3(followTarget.transform.position.x, followTarget.transform.position.y, transform.position.z) + offset;
     }
 }
