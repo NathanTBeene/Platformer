@@ -1,6 +1,4 @@
 // AND Gate
-using System.Linq;
-
 public class ANDGate : LogicGate
 {
   public override bool EvaluateLogic(SignalNode[] inputNodes)

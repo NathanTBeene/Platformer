@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
+    [SerializeField] private float terminalVelocityY = 15f;
 
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 1.5f;
@@ -98,6 +99,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        }
+
+        if (rb.linearVelocity.y < -terminalVelocityY)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -terminalVelocityY);
         }
     }
 

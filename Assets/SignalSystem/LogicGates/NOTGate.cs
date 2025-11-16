@@ -1,6 +1,4 @@
 // NOT Gate
-using System.Linq;
-
 public class NOTGate : LogicGate
 {
   public override bool EvaluateLogic(SignalNode[] inputNodes)

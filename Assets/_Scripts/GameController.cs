@@ -75,11 +75,17 @@ public class GameController : MonoBehaviour
     {
         SetGameTime(true);
         lastSavePoint = null;
-        StartCoroutine(LoadScene("Level1", false));
+        StartCoroutine(LoadScene("LevelScene", false));
     }
 
     public IEnumerator LoadScene(string sceneName, bool isAdditive)
     {
+        if (!_isProperScene(sceneName))
+        {
+            Debug.LogError($"Scene '{sceneName}' is not recognized in GameController.");
+            yield break;
+        }
+
         yield return SceneManager.LoadSceneAsync(sceneName, isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single);
         _ensureEventSystem();
     }
@@ -139,13 +145,11 @@ public class GameController : MonoBehaviour
 
     public void ShowPauseMenu()
     {
-        Debug.Log("Showing Pause Menu...");
         StartCoroutine(_loadPauseMenuAsync());
     }
 
     public void HidePauseMenu()
     {
-        Debug.Log("Hiding Pause Menu...");
         StartCoroutine(_unloadPauseMenuAsync());
     }
 
@@ -247,6 +251,18 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region Utility
+
+    private bool _isProperScene(string sceneName)
+    {
+        foreach (string scene in scenes)
+        {
+            if (scene == sceneName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public bool _isInMainMenu()
     {
