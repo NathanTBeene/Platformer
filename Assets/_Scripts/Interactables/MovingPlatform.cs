@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class MovingPlatform : MonoBehaviour
     [Header("References")]
     [SerializeField] private OutputNode outputNode;
     [SerializeField] private PowerIndicator powerIndicator;
+    [SerializeField] private Collider2D platformCollider;
 
     [Header("Settings")]
     [SerializeField] private bool autoStart = true;
@@ -29,6 +31,10 @@ public class MovingPlatform : MonoBehaviour
     private Tween currentTween;
     private bool isMoving = false;
 
+    private bool isPlayerOnPlatform = false;
+    private GameObject currentPlayer = null;
+    private GameObject lastParent = null;
+
     private void OnEnable() {
         if (!outputNode)
         {
@@ -43,12 +49,44 @@ public class MovingPlatform : MonoBehaviour
 
     private void Start()
     {
+        if (platformCollider == null)
+        {
+            platformCollider = GetComponent<Collider2D>();
+        }
         initialPosition = transform.position;
 
         // Only auto start if there is no output node
         if (autoStart && (outputNode == null))
         {
             _startMove();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        _checkPlayerOnPlatform();
+    }
+
+    private void _checkPlayerOnPlatform()
+    {
+       // Check if player is colliding with platform
+        Collider2D[] hits = Physics2D.OverlapBoxAll(platformCollider.bounds.center, platformCollider.bounds.size, 0f);
+        GameObject playerOnPlatform = hits.FirstOrDefault(c => c.CompareTag("Player"))?.gameObject;
+
+        if (playerOnPlatform != null && currentPlayer != playerOnPlatform)
+        {
+            // New player stepped on platform
+            lastParent = playerOnPlatform.transform.parent ? playerOnPlatform.transform.parent.gameObject : null;
+            playerOnPlatform.transform.SetParent(transform);
+            currentPlayer = playerOnPlatform;
+            isPlayerOnPlatform = true;
+        }
+        else if (playerOnPlatform == null && currentPlayer != null)
+        {
+            // Player stepped off platform
+            currentPlayer.transform.SetParent(lastParent ? lastParent.transform : null);
+            currentPlayer = null;
+            isPlayerOnPlatform = false;
         }
     }
 
@@ -94,6 +132,15 @@ public class MovingPlatform : MonoBehaviour
             {
                 currentTween = null;
             });
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        Debug.Log("Collision detected with " + other.gameObject.name);
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Player stepped on platform");
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class PressurePlate : MonoBehaviour
     [SerializeField] private Sprite plateUpSprite;
     [SerializeField] private Sprite plateDownSprite;
 
+    private List<string> collisionTags = new List<string>();
 
     void Start()
     {
@@ -19,16 +21,22 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("physicsObject"))
         {
             _plateDown();
             inputNode.setState(true);
+            collisionTags.Add(other.tag);
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (collisionTags.Contains(other.tag))
+        {
+            collisionTags.Remove(other.tag);
+        }
+
+        if (collisionTags.Count == 0)
         {
             inputNode.setState(false);
             _plateUp();
