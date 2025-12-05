@@ -23,7 +23,7 @@ public class FollowCamera : MonoBehaviour
         if (cameraLag)
         {
             Vector3 targetPosition = new Vector3(followTarget.transform.position.x, followTarget.transform.position.y, transform.position.z) + offset;
-            transform.position = Vector3.Lerp(transform.position, targetPosition, followSpeed * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, followSpeed * Time.fixedDeltaTime);
         }
         else
         {

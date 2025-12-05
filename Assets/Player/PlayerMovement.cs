@@ -141,6 +141,19 @@ public class PlayerMovement : MonoBehaviour
         // We don't need it when manually controlling the player.
         if (!enableInputMovement) return;
 
+
+        // Skip ground check if player is on a moving platform(parented to it)
+        if (transform.parent != null && transform.parent.CompareTag("MovingPlatform"))
+        {
+            if (coyoteTimeCoroutine != null)
+            {
+                StopCoroutine(coyoteTimeCoroutine);
+                coyoteTimeCoroutine = null;
+            }
+            setCanJump(true);
+            return;
+        }
+
         isOnFloor = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
         if (isOnFloor)
         {
