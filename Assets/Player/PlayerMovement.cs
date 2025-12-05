@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -13,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
     [SerializeField] private float terminalVelocityY = 15f;
+
+    [Header ("Coyote Time")]
+    [SerializeField] private float coyoteTimeDuration = 0.15f;
+    private Coroutine coyoteTimeCoroutine;
 
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 1.5f;
@@ -109,7 +114,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void _jump()
     {
-        if (!isOnFloor || !canJump) return;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
 
@@ -121,12 +125,29 @@ public class PlayerMovement : MonoBehaviour
 
     void OnJump()
     {
+        if (!enableInputMovement) return;
         _jump();
     }
 
     private void _checkIfGrounded()
     {
         isOnFloor = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+        if (isOnFloor)
+        {
+            if (coyoteTimeCoroutine != null)
+            {
+                StopCoroutine(coyoteTimeCoroutine);
+                coyoteTimeCoroutine = null;
+            }
+            setCanJump(true);
+        }
+        else
+        {
+            if (canJump && coyoteTimeCoroutine == null)
+            {
+                coyoteTimeCoroutine = StartCoroutine(_startCoyoteTimer(coyoteTimeDuration));
+            }
+        }
     }
 
     private void OnDrawGizmos()
@@ -136,31 +157,44 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void setCanMove(bool value) => canMove = value;
-  public void setCanJump(bool value) => canJump = value;
+    public void setCanJump(bool value) => canJump = value;
 
-  public void StartMovingLeft()
-  {
-    setCanMove(true);
-    setCanJump(true);
-    directionX = -1;
-  }
+    private IEnumerator _startCoyoteTimer(float duration)
+    {
+        Debug.Log("Coyote time started");
+        setCanJump(true);
+        yield return new WaitForSeconds(duration);
+        Debug.Log("Coyote time ended");
+        setCanJump(false);
+        coyoteTimeCoroutine = null;
+    }
 
-  public void StartMovingRight()
-  {
-    setCanMove(true);
-    setCanJump(true);
-    directionX = 1;
-  }
 
-  public void StopMoving()
-  {
-    setCanMove(false);
-    setCanJump(false);
-    directionX = 0;
-  }
+    // Movement control methods for external calls
 
-  public void Jump()
-  {
-    _jump();
-  }
+    public void StartMovingLeft()
+    {
+        setCanMove(true);
+        setCanJump(true);
+        directionX = -1;
+    }
+
+    public void StartMovingRight()
+    {
+        setCanMove(true);
+        setCanJump(true);
+        directionX = 1;
+    }
+
+    public void StopMoving()
+    {
+        setCanMove(false);
+        setCanJump(false);
+        directionX = 0;
+    }
+
+    public void Jump()
+    {
+        _jump();
+    }
 }
