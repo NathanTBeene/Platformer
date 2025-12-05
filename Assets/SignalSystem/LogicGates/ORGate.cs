@@ -1,18 +1,20 @@
 // OR Gate
 using System.Linq;
+using UnityEngine;
 
 public class ORGate : LogicGate
 {
-  public override bool EvaluateLogic(SignalNode[] inputNodes)
-  {
-    if (inputNodes.Length != 2) return false;
-    SignalNode inputA = inputNodes[0];
-    SignalNode inputB = inputNodes[1];
+    public override bool EvaluateLogic(SignalNode[] inputNodes)
+    {
 
-    this.input1 = inputA.isActive;
-    this.input2 = inputB.isActive;
-    this.output = inputA.isActive || inputB.isActive;
+        if (inputNodes == null || inputNodes.Length == 0) return false;
 
-    return this.output;
-  }
+        bool result = inputNodes.Any(node => node != null && node.isActive);
+
+        this.input1 = inputNodes.Length > 0 && inputNodes[0] != null ? inputNodes[0].isActive : false;
+        this.input2 = inputNodes.Length > 1 && inputNodes[1] != null ? inputNodes[1].isActive : false;
+        this.output = result;
+
+        return this.output;
+    }
 }

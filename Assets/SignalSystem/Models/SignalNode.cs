@@ -9,9 +9,9 @@ using UnityEngine;
 public abstract class SignalNode : MonoBehaviour
 {
   // Events
-  public Action<SignalNode> signalOn;
-  public Action<SignalNode> signalOff;
-  public Action<bool> onStateChange;
+  public event Action<SignalNode> signalOn;
+  public event Action<SignalNode> signalOff;
+  public event Action<bool> onStateChange;
 
   public bool isActive = false;
 
@@ -32,18 +32,20 @@ public abstract class SignalNode : MonoBehaviour
     onStateChange?.Invoke(isActive);
   }
 
+  public bool getState()
+  {
+    return isActive;
+  }
+
+
   protected virtual void _emitOn()
   {
     if (!CanSend) return;
-
-    var gameObject = this.gameObject;
     signalOn?.Invoke(this);
   }
   protected virtual void _emitOff()
   {
     if (!CanSend) return;
-
-    var gameObject = this.gameObject;
     signalOff?.Invoke(this);
   }
 
@@ -59,5 +61,11 @@ public abstract class SignalNode : MonoBehaviour
   {
     Gizmos.color = isActive ? Color.green : Color.red;
     Gizmos.DrawSphere(transform.position, 0.1f);
+  }
+
+  [ContextMenu("Toggle State")]
+  public void ToggleState()
+  {
+    setState(!isActive);
   }
 }

@@ -31,6 +31,13 @@ public class GateView : MonoBehaviour
         logicGate.signalOff -= HandleSignalOff;
     }
 
+    private void Start() {
+        if (wireManagers == null || wireManagers.Length == 0)
+        {
+            wireManagers = GetComponentsInChildren<WireManager>();
+        }
+    }
+
     void Update()
     {
         if (isSingleInput)

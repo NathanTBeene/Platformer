@@ -26,6 +26,11 @@ public class Switch : MonoBehaviour
             inputNode = GetComponent<InputNode>();
         }
 
+        if (!wire)
+        {
+            wire = GetComponent<WireManager>();
+        }
+
         if (startOn)
         {
             StartCoroutine(_switch_on());

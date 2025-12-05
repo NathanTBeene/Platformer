@@ -119,11 +119,10 @@ public class SignalCircuit
   public void OnDrawGizmos()
   {
     if (!showGizmos) return;
-    if (!isEnabled || connections == null || connections.Length == 0)
-    {
-      return;
-    }
-    ;
+    // if (!isEnabled || connections == null || connections.Length == 0)
+    // {
+    //   return;
+    // }
 
     foreach (var conn in connections)
     {

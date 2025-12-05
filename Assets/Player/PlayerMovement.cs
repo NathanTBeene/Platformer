@@ -22,9 +22,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 1.5f;
     [SerializeField] private LayerMask groundLayer;
+
     public bool isOnFloor;
-
-
     public bool enableInputMovement = true;
     public bool canMove = true;
     public bool canJump = true;
@@ -41,6 +40,10 @@ public class PlayerMovement : MonoBehaviour
         jumpForce = defaultJumpForce;
     }
 
+    private int jumpPadCount = 0;
+    private float currentJumpForce;
+    private float originalJumpForce;
+
     void OnEnable()
     {
         InputManager.onMove += OnMove;
@@ -56,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         defaultJumpForce = jumpForce;
+        originalJumpForce = jumpForce;
+        currentJumpForce = jumpForce; // Initialize currentJumpForce!
     }
 
     void Update()
@@ -114,7 +119,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void _jump()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        if (!canJump) return; // Add this check!
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpForce);
     }
 
     void OnMove(float direction)
@@ -131,6 +137,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void _checkIfGrounded()
     {
+        // Prevents coyote time activating when input movement is disabled
+        // We don't need it when manually controlling the player.
+        if (!enableInputMovement) return;
+
         isOnFloor = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
         if (isOnFloor)
         {
@@ -169,6 +179,24 @@ public class PlayerMovement : MonoBehaviour
         coyoteTimeCoroutine = null;
     }
 
+    public void IncrementJumpPadCount(float jumpForce)
+    {
+        jumpPadCount++;
+        if (jumpPadCount == 1)
+        {
+            currentJumpForce = jumpForce;
+        }
+    }
+
+    public void DecrementJumpPadCount()
+    {
+        jumpPadCount--;
+        if (jumpPadCount <= 0)
+        {
+            jumpPadCount = 0;
+            currentJumpForce = originalJumpForce;
+        }
+    }
 
     // Movement control methods for external calls
 

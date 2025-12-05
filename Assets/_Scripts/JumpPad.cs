@@ -57,7 +57,7 @@ public class JumpPad : MonoBehaviour
 
                 if (isPowered)
                 {
-                    playerMovement.SetJumpForce(jumpForce);
+                    playerMovement.IncrementJumpPadCount(jumpForce);
                 }
             }
         }
@@ -74,7 +74,7 @@ public class JumpPad : MonoBehaviour
                 {
                     _powerOff();
                 }
-                playerMovement.ResetJumpForce();
+                playerMovement.DecrementJumpPadCount();
             }
         }
     }
