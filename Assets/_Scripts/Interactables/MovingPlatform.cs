@@ -31,7 +31,6 @@ public class MovingPlatform : MonoBehaviour
     private Tween currentTween;
     private bool isMoving = false;
 
-    private bool isPlayerOnPlatform = false;
     private GameObject currentPlayer = null;
     private GameObject lastParent = null;
 
@@ -79,14 +78,12 @@ public class MovingPlatform : MonoBehaviour
             lastParent = playerOnPlatform.transform.parent ? playerOnPlatform.transform.parent.gameObject : null;
             playerOnPlatform.transform.SetParent(transform);
             currentPlayer = playerOnPlatform;
-            isPlayerOnPlatform = true;
         }
         else if (playerOnPlatform == null && currentPlayer != null)
         {
             // Player stepped off platform
             currentPlayer.transform.SetParent(lastParent ? lastParent.transform : null);
             currentPlayer = null;
-            isPlayerOnPlatform = false;
         }
     }
 

@@ -78,6 +78,8 @@ MonoBehaviour:
   animator: {fileID: 4078414723684327946}
   moveSpeed: 6
   jumpForce: 14
+  terminalVelocityY: 15
+  coyoteTimeDuration: 0.15
   groundCheckDistance: 0.55
   groundLayer:
     serializedVersion: 2
@@ -158,6 +160,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4198778679502658720
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -202,7 +205,8 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 20
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 512832153307269704, guid: e7fe21555a842f847a018ce3dc293f0d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -212,7 +216,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &4078414723684327946
 Animator:
